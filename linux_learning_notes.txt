@@ -1,0 +1,1660 @@
+type COMMAND：判断COMMAND是内部命令还是外部命令
+pwd：显示当前目录
+Linux文件名称规范：除了换行符都可以，一般不建议使用空白，/，?，*。不靠扩展名区分文件类型，目录也是文件，目录不能跟文件同名
+
+COMMAND [options] [arguments]
+选项：用于调整命令执行行为的开关
+  短选项：-h,-l，多个选项之间用空格隔开
+     有些命令的短选项可以组合：-l -h = -lh
+     有些命令的短选项可以不带-，通常称作BSD风格的选项：ps aux, tar xf
+     有些短选项需要带参数：-l 512m
+  长选项：--help, --list
+     长选项通常不能组合
+     如果需要参数，长选项的参数通常需要使用=号：--size=10
+ 参数：命令的作用对象
+
+ 如何获取命令帮助信息
+ 1）内部命令：help COMMAND
+ 2）外部命令：COMMAND --help
+ 3）manual COMMAND，手册。
+    是有章节概念
+      1.用户命令
+      2.系统调用
+      3.库调用
+      4.特殊文件（/dev/tty1）
+      5.文件格式（命令的配置文件的语法）
+      6.游戏相关
+      7.杂项
+      8.管理员命令
+    翻页操作：
+        向前翻1页：SPACE键
+	向后翻1页：b键
+    一行：
+        向前：Enter键
+	向后：k键
+    退出：q键
+    搜索：
+        /KEYWORD：从文件首部向尾部搜索
+	?KEYWORD：从文件尾部向首部搜索
+    n: next
+    N: previos
+4）info COMMAND
+   有超链接的文档
+5) /usr/share/doc/APP_NANE-version
+
+
+[]：可选内容
+<>：必须给出的内容
+|：多选一
+...：可以有多个
+{}：bash中表示展开
+   如：mkdir /test/{p,q}/a/b -pv，将会生成以下目录
+					  /test/p/a/b
+					  /test/q/a/b
+       mkdir /test/{d,e}_{f,g} -v，将会生成以下目录
+                                          /test/d_f
+					  /test/d_g
+					  /test/e_f
+					  /test/e_g
+
+date：查看系统时间
+1）、输出yyyy-mm-dd HH:MM:SS的日期：date +%Y-%m-%d\ %H:%M:%S
+2）、hwlock查看主板时间
+3）、cal
+
+halt
+reboot
+shutdown
+
+windows下有很多文件、文件夹的名字中间有空格，如何在shell下实现呢？
+有几种方法，常用的：(My document)
+#cd 'My document'
+#cd "My document"
+#cd My\ document
+#mkdir My\ document
+让空格变为字符而非结束符，就可实现。
+
+
+cd或者cd ~直接回到当前用户目录
+cd ~USERNAME进入到其它用户目录，前提有权限
+.：表示当前目录
+..：表示当前目录的上层目录
+.和..都是相对路径
+cd -：在你上一次目录和当前目录来回切换（echo $PWD或者echo $OLDPWD）
+
+
+linux下所有以.开头的文件是隐藏文件
+linux文件的类型：
+1、普通文件，表示为：-或者f
+2、目录文件，表示为：d
+3、链接文件
+      符号链接，表示为：l
+      硬链接，表示为：0
+4、特殊文件（跟硬件设备相关，用于作为硬件设备访问入口的文件）
+      块设备：随机、按块进行存取，表示为：b
+      字符设备：线性、按字符逐个存取，表示为：c
+5、套接字文件socket，表示为：s
+6、命令管道pipe，表示为：p
+
+ll：
+ls：list
+    -a, -A：显示隐藏文件
+    -l：long长格式
+	dr-xr-xr-x.   2 root root  4096 3月  28 06:06 bin
+	d（文件类型），rwxr-xr-x（用户权限），2（文件硬链接的个数），root（文件的属主），root（文件的属组），4096（文件的大小），文件最近一次修改时间，文件名
+    -d：只显示目录本身
+    -h：友好显示文件大小等信息
+    -r: --reverse   排序时保留顺序
+    -R: --recursive  递归显示子目录
+    -i, --inode 显示每个文件的inode(index)号
+
+
+
+文件结构
+
+/：根目录，所有的目录、文件、设备都在/之下，/就是Linux文件系统的组织者，也是最上级的领导者。
+/bin：bin 就是二进制（binary）英文缩写。在一般的系统当中，都可以在这个目录下找到linux常用的命令。系统所需要的那些命令位于此目录。
+/boot：Linux的内核及引导系统程序所需要的文件目录，比如 vmlinuz initrd.img 文件都位于这个目录中。在一般情况下，GRUB或LILO系统引导管理器也位于这个目录。
+/cdrom：这个目录在刚刚安装系统的时候是空的。可以将光驱文件系统挂在这个目录下。例如：mount /dev/cdrom /cdrom
+/dev：dev 是设备（device)的英文缩写。这个目录对所有的用户都十分重要。因为在这个目录中包含了所有linux系统中使用的外部设备。但是这里并不是放的外部设备的驱动程序。这一点和常用的windows,dos操作系统不一样。它实际上是一个访问这些外部设备的端口。可以非常方便地去访问这些外部设备，和访问一个文件，一个目录没有任何区别。
+/etc：etc这个目录是linux系统中最重要的目录之一。在这个目录下存放了系统管理时要用到的各种配置文件和子目录。要用到的网络配置文件，文件系统，x系统配置文件，设备配置信息，设置用户信息等都在这个目录下。
+/home：如果建立一个用户，用户名是"xx",那么在/home目录下就有一个对应的/home/xx路径，用来存放用户的主目录。
+/lib：lib是库（library）英文缩写。这个目录是用来存放系统动态连接共享库的。几乎所有的应用程序都会用到这个目录下的共享库。因此，千万不要轻易对这个目录进行什么操作，一旦发生问题，系统就不能工作了。
+/lost+found：在ext2或ext3文件系统中，当系统意外崩溃或机器意外关机，而产生一些文件碎片放在这里。当系统启动的过程中fsck工具会检查这里，并修复已经损坏的文件系统。有时系统发生问题，有很多的文件被移到这个目录中，可能会用手工的方式来修复，或移到文件到原来的位置上。
+/mnt：这个目录一般是用于存放挂载储存设备的挂载目录的，比如有cdrom等目录。可以参看/etc/fstab的定义。
+/media：有些linux的发行版使用这个目录来挂载那些usb接口的移动硬盘（包括U盘）、CD/DVD驱动器等等。
+/opt：这里主要存放那些可选的程序。
+/proc：可以在这个目录下获取系统信息。这些信息是在内存中，由系统自己产生的。
+/root：Linux超级权限用户root的家目录。
+/sbin：这个目录是用来存放系统管理员的系统管理程序。大多是涉及系统管理的命令的存放，是超级权限用户root的可执行命令存放地，普通用户无权限执行这个目录下的命令，这个目录和/usr/sbin; /usr/X11R6/sbin或/usr/local/sbin目录是相似的，凡是目录sbin中包含的都是root权限才能执行的。
+/selinux ：对SElinux的一些配置文件目录，SElinux可以让linux更加安全。
+/srv 服务启动后，所需访问的数据目录，举个例子来说，www服务启动读取的网页数据就可以放在/srv/www中
+/tmp：临时文件目录，用来存放不同程序执行时产生的临时文件。有时用户运行程序的时候，会产生临时文件。/tmp就用来存放临时文件的。/var/tmp目录和这个目录相似。
+/usr
+这是linux系统中占用硬盘空间最大的目录。用户的很多应用程序和文件都存放在这个目录下。在这个目录下，可以找到那些不适合放在/bin或/etc目录下的额外的工具
+/usr/local：这里主要存放那些手动安装的软件，即不是通过“新立得”或apt-get安装的软件。它和/usr目录具有相类似的目录结构。让软件包管理器来管理/usr目录，而把自定义的脚本（scripts)放到/usr/local目录下面、。
+/usr/share ：系统共用的东西存放地，比如 /usr/share/fonts 是字体目录，/usr/share/doc和/usr/share/man帮助文件。
+/var：这个目录的内容是经常变动的，看名字就知道，可以理解为vary的缩写，/var下有/var/log 这是用来存放系统日志的目录。/var/ www目录是定义Apache服务器站点存放目录；/var/lib 用来存放一些库文件，比如MySQL的，以及MySQL数据库的的存放地。[4]
+
+
+文件管理类命令
+目录：
+    mkdir：创建目录
+	-p：先创建父目录
+	-v: --verbose  每次创建新目录都显示信息
+    rmdir：删除空目录
+	-p, --parents  删除指定目录及其上级文件夹，如"rmdir -p a/b/c'"与"rmdir a/b/c a/b a'" 基本相同
+    tree：以树展示目录文件
+文件：
+    cp：复制
+	cp /etc/passwd /tmp/abc
+	   如果abc不存在，则复制并重命名为abc
+	   如果abc存在
+		如果abc是文件，则覆盖，通常会有提示
+		如果abc是目录，passwd文件会被复制到abc目录中
+	-R，-r：递归复制目录
+	-i, --interactive 覆盖前询问(使前面的 -n 选项失效)
+	-p：保留原有的权限，属主和时间戳
+	-a：-dr
+    dd：底层方式的复制，默认是从标准输入到标准输出
+        if=file：从 file 中读而不是标准输入。
+	of=file：写到 file 里去而不是标准输出。除非指定 conv=notrunc ，否则， dd 将把 file 截为O字节（或由 seek= 选项指定的大小）
+	bs=bytes：一次读和写 bytes 字节。
+	count=blocks：只拷贝输入文件的前 blocks 块（每块的大小为 ibs-byte 字节），而不是全部内容，直到文件末尾。
+	    [root@localhost ~]# dd if=/dev/sda of=~/mbr.backup bs=2 count=256
+    mv：移动
+        mv /test/abc /test/abc3 重命名文件
+    rm：删除
+        -r, -R, --recursive  递归删除目录及其内容
+	-f：--force 强制删除。忽略不存在的文件，不提示确认
+    touch：将每个文件的访问时间和修改时间改为当前时间。
+           三个时间：
+		最近一次的访问时间：access
+		最近一次的修改时间：modify，文件内容的改变
+		最近一次的改变时间：change，文件元数据的改变
+	   touch /test/a 如果a不存在，则创建文件
+    file：显示文件内容的类型
+
+文件数据：
+    数据
+    元数据：
+        包含了文件类型，权限，链接次数，属主和属组的id号，时间戳，存储磁盘块编号
+目录：
+    文件名称是存放在目录上面的
+    目录是一种特殊的文件
+硬链接：Hard Link
+    硬连接指通过索引节点来进行连接。在Linux的文件系统中，保存在磁盘分区中的文件不管是什么类型都给它分配一个编号，称为索引节点号(Inode Index)。在Linux中，多个文件名指向同一索引节点是存在的。一般这种连接就是硬连接。硬连接的作用是允许一个文件拥有多个有效路径名，这样用户就可以建立硬连接到重要文件，以防止“误删”的功能。其原因如上所述，因为对应该目录的索引节点有一个以上的连接。只删除一个连接并不影响索引节点本身和其它的连接，只有当最后一个连接被删除后，文件的数据块及目录的连接才会被释放。也就是说，文件真正删除的条件是与之相关的所有硬连接文件均被删除。
+    不能指向在目录上，只能用于文件
+    不能跨分区，必须在同一文件系统中
+软链接：Symbolic Link
+    另外一种连接称之为符号连接（Symbolic Link），也叫软连接。软链接文件有类似于Windows的快捷方式。它实际上是一个特殊的文件。在符号连接中，文件实际上是一个文本文件，其中包含的有另一文件的位置信息。
+    可以跨分区。
+
+ln [option] SRC DST
+    -s：创建软链接
+    -v：打印创建好的链接信息
+1.通过实验加深理解
+[oracle@Linux]$ touch f1          #创建一个测试文件f1
+[oracle@Linux]$ ln f1 f2          #创建f1的一个硬连接文件f2
+[oracle@Linux]$ ln -s f1 f3       #创建f1的一个符号连接文件f3
+[oracle@Linux]$ ls -li            # -i参数显示文件的inode节点信息
+total 0
+9797648 -rw-r--r--  2 oracle oinstall 0 Apr 21 08:11 f1
+9797648 -rw-r--r--  2 oracle oinstall 0 Apr 21 08:11 f2
+9797649 lrwxrwxrwx  1 oracle oinstall 2 Apr 21 08:11 f3 -> f1
+
+从上面的结果中可以看出，硬连接文件f2与原文件f1的inode节点相同，均为9797648，然而符号连接文件的inode节点不同。
+
+[oracle@Linux]$ echo "I am f1 file" >>f1
+[oracle@Linux]$ cat f1
+I am f1 file
+[oracle@Linux]$ cat f2
+I am f1 file
+[oracle@Linux]$ cat f3
+I am f1 file
+[oracle@Linux]$ rm -f f1
+[oracle@Linux]$ cat f2
+I am f1 file
+[oracle@Linux]$ cat f3
+cat: f3: No such file or directory
+
+通过上面的测试可以看出：当删除原始文件f1后，硬连接f2不受影响，但是符号连接f1文件无效
+
+2.总结
+依此您可以做一些相关的测试，可以得到以下全部结论：
+1).删除符号连接f3,对f1,f2无影响；
+2).删除硬连接f2，对f1,f3也无影响；
+3).删除原文件f1，对硬连接f2没有影响，导致符号连接f3失效；
+4).同时删除原文件f1,硬连接f2，整个文件会真正的被删除。
+
+
+Linux支持的文件系统类型
+1、Linux、Unix
+    传统：ext2（不支持日志）, ext3（支持日志）, ext4, reiserfs, xfs, jfs
+    光盘：iso9660
+    集群文件系统：GFS2, OCFS2
+    网络文件系统：NFS, CIFS
+2、WIndows
+    VFAT
+    NTFS
+
+低级格式化：低级格式化就是将空白的磁盘划分出柱面和磁道，再将磁道划分为若干个扇区，每个扇区又划分出标识部分ID、间隔区GAP和数据区DATA等。
+高级格式化：在分区上创建文件系统，由内核完成。
+    mkfs -t FS_TYPE /dev/device
+        mkfs -t ext2 /dev/sda5等同于mkfs.ext2 /dev/sda5
+	mkfs按Tab键，查看当前系统能够运行的格式化类型。
+    mke2fs
+        -L label：指定卷标名称
+	-j：生成日志
+	-b BLOCK_SIZE：指定block大小[1024, 2048, 4096]
+	-m 数字（百分比，默认是百分之5）：备份空间大小
+	-i：inode，不能小于磁盘块大小
+	-N: inode
+    e2label 设备名 [新卷标名称]：查看卷标名称或者进行修改
+    [root@localhost ~]# blkid /dev/sda3 #查看设备UUID信息
+    /dev/sda3: UUID="3aeffecf-0f9e-4369-b59c-94d7140592a5" TYPE="ext4"
+
+rootfs：根文件系统
+mount：挂载命令
+mount [option] DEVICE MOUNT_POINT
+    -t FS_TYPE：指定文件类型
+    -o rw,suid,dev,exec,auto,nouser,async,remount,ro,loop,...
+    -o ro = -r：只读
+
+umount DEVICE：卸载文件系统
+umount MOUNT_POINT
+
+fuser -v DEVICE/MOUNT_POINT：命令是用来显示所有正在使用着指定的file, file system 或者 sockets的进程信息。
+fuser -km DEVICE/MOUNT_POINT：kill正在使用的进程
+
+tune2fs
+    -l DEVICE：查看设备文件系统超级块信息
+    -L
+    -j
+    -m
+    -C #
+    -i
+    -o：设定文件系统默认挂载选项
+dumpe2fs
+
+硬件，/dev
+IDE接口：/dev/hda, /dev/hdb, /dev/hdc, ...
+SATA接口：/dev/sda
+    主分区（扩展分区）：1-4
+    逻辑分区：5+
+USB接口：/dev/sd
+SCSI接口：/dev/sd
+SAS接口：/dev/sd
+
+linux的虚拟内存要使用独立的文件系统
+虚拟内存，swap
+mkswap DEVICE：创建虚拟文件系统
+swapon DEVICE：开启创建好的虚拟文件系统
+swapon -a：开启所有的
+swapoff DEVICE：关闭指定的虚拟文件系统
+swapoff -a：关闭所有的
+free -m：查看内存信息，以M的方式，默认是kb
+
+fdisk
+    -l：列出指定设备的分区表信息并退出
+    -u 设备名：以扇区数而不是以柱面数的形式显示分区表中各分区的信息
+
+[root@localhost ~]# cat /proc/partitions #查看当前系统分区信息
+
+/etc/fstab：设置系统开机自动挂载的配置文件
+6个字段的含义如下：
+1、设备：设备文件/LABEL=卷标名/UUID=UUID号
+2、挂在点
+3、文件系统类型
+4、挂载选项：如果有多个，使用逗号隔开
+5、完全备份的频率
+   0：从不备份
+   1：每天完全备份
+   2：每隔一天完全备份
+6、文件系统检测的次序：0-9
+   0：不检测
+   1：只能是rootfs
+   如果数字相同，并行检测。
+
+
+df(diskfree)：显示磁盘的相关信息
+    -a或--all包含全部的文件系统。
+    --block-size=<区块大小>以指定的区块大小来显示区块数目。
+    -h或--human-readable以可读性较高的方式来显示信息。
+    -H或--si与-h参数相同，但在计算时是以1000Bytes为换算单位而非1024Bytes。
+    -i或--inodes显示inode的信息。
+    -k或--kilobytes指定区块大小为1024字节。
+    -l或--local仅显示本地端的文件系统。
+    -m或--megabytes指定区块大小为1048576字节。
+    --no-sync在取得磁盘使用信息前，不要执行sync指令，此为预设值。
+    -P或--portability使用POSIX的输出格式。
+
+du - 报告磁盘空间使用情况
+du [options] [file...]
+    -s, 只统计指定参数的在同一设备上所使用的空间。
+    -h, --human-readable 为每个数附加一个表示大小单位的字母，象用M表示二进制的兆字节。
+	[root@localhost ~]# du -sh /* #统计根目录下每个文件使用的空间大小
+
+raid级别
+1、raid0：条带（至少组合2块disk）
+    读/写性能都线性增加
+    没有容错能力
+    N*disk
+2、raid1：镜像（至少组合2块disk）
+    线上业务不终止，数据不丢失
+    写入性能没有提升
+    读取性能提升
+    1*disk
+3、raid4：（至少组合3块disk）
+    读/写性能都线性增加
+    有容错能力
+    (N-1)*disk
+    最多允许一个disk坏掉
+4、raid5：（至少组合3块disk）
+5、raid6：（至少组合4块disk，对raid5的升级）
+6、raid10：（至少组合4块disk，结合raid1和raid0）
+   将两块组合成raid1，在将raid1组合成raid0
+7、raid50    
+
+文本查看类：
+cat：将[文件]或标准输入组合输出到标准输出。
+    -n：显示行号，跟文件内容无关系，只用于显示
+    -E：显示非打印符号，如：换行符$
+tac：同cat，只是将文件从尾部显示到首页
+more
+less：和man快捷键一样，man使用的就是less命令
+head：查看文件的前面几行，默认10号
+    -n数字：查看多少行
+tail：查看文件的尾部几行，默认10号
+    -n数字：查看多少行
+    -f：不退出此文件，跟踪文件
+
+
+文本操作类：
+cut：从每个文件中输出指定部分到标准输出
+    -d, --delimiter=分界符  使用指定分界符代替制表符作为区域分界
+    -f, --fields=LIST：显示第几段
+       -f 1,5：第一段和第五段
+       -f 1-5：第一段到第五段
+	example：
+	[root@localhost test]# cat b.txt
+	1 ton 23
+	2 jerry 56
+	3 selina 77
+	[root@localhost test]# cut -d" " -f1,3 b.txt
+	1 23
+	2 56
+	3 77
+	[root@localhost test]# cut -d" " -f1-3 b.txt
+	1 ton 23
+	2 jerry 56
+	3 selina 77
+tr：从标准输入中替换、缩减和/或删除字符，并将结果写到标准输出。
+	example：
+	[root@localhost test]# cat b.txt
+	1 ton 23
+	2 jerry 56
+	3 selina 77
+	将小写字母转换大写字母
+	[root@localhost test]# tr 'a-z' 'A-Z' < b.txt
+	1 TON 23
+	2 JERRY 56
+	3 SELINA 77
+	删除字符a
+	[root@localhost test]# tr -d 'a' < b.txt
+	1 ton 23
+	2 jerry 56
+	3 selin 77
+
+文本统计命令
+wc：word count，输出每个指定文件的行数、单词计数和字节数，如果指定了多于一个文件，继续给出所有相关数据的总计。如果没有指定文件，或者文件为"-",则从标准输入读取数据。
+    -c, --bytes 输出字节数统计
+    -m, --chars 输出字符数统计
+    -l, --lines 输出行数统计
+	--files0-from=文件 从指定文件读取以NUL 终止的名称，如果该文件被指定为"-"则从标准输入读文件名
+    -L, --max-line-length 显示最长行的长度
+    -w, --words                   显示单词计数
+
+文本排序命令
+sort
+    -r, --reverse 逆序输出排序结果
+    -n, --numeric-sort 根据字符串数值比较
+    -t, --field-separator=分隔符 使用指定的分隔符代替非空格到空格的转换
+    -k, --key=位置1[,位置2] 在位置1 开始一个key，在位置2 终止(默认为行尾)
+	example：
+	[root@localhost test]# sort -n -t' ' -k3 b.txt
+	1 ton 23
+	2 jerry 56
+	3 selina 77
+
+
+注意默认root用户配置cp使用了-i选项，如果这时候要使用默认cp命令，可以使用/cp，这样就不会使用别名中的cp -i了。
+[root@localhost test]# alias
+alias cp='cp -i'
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias rm='rm -i'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+[root@localhost test]# /cp
+
+
+
+shift + PgUp/PgDn 进行翻页
+Ctrl + c 终止当前命令
+
+命令行编辑：
+    Ctrl + a ：跳到行首
+    Ctrl + e ：跳到行尾
+    Ctrl + u ：从光标所在处前一个字符到命令行行首的字符都删除掉
+    Ctrl + k ：从光标所在处到命令行行尾的字符都删除掉
+    Ctrl + l ：清屏，等同于clear
+    Ctrl + c ：取消命令，不在执行
+命令补全：
+    内部命令：shell自带
+    外部命令：位于某路径下有与命令名相同的可执行程序，/bin, /sbin, /usr/bin, /usr/sbin, /usr/local/bin, /usr/local/sbin
+	[root@localhost etc]# echo $PATH
+	/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+   补全机制：第一次执行是到$PATH路径下寻找对应的命令，然后会保存在缓存里，可以通过hash查看。清除缓存，使用hash，可以查看help hash命令帮助。
+	[root@localhost etc]# hash
+	hits    command
+	   1    /bin/grep
+	   1    /usr/bin/whereis
+	   1    /usr/bin/printenv
+	   2    /bin/ls
+	   2    /usr/bin/clear
+	[root@localhost etc]# hash -d ls
+	[root@localhost etc]# hash
+	hits    command
+	   1    /bin/grep
+	   1    /usr/bin/whereis
+	   1    /usr/bin/printenv
+	   2    /usr/bin/clear
+路径补全：根据给出的打头的路径进行路径搜索
+命令历史：
+    bash：缓存至内存中
+
+history：查看历史命令
+    -c：清空历史命令记录
+    -w：保存缓存中的历史记录到历史文件中去，会先清除掉已经保存的记录
+    -a：在历史文件中追加
+    -d 行：可以删除某一条历史记录
+    -d 行 n：从某一条历史记录开始删除n条
+!24：表示执行历史中的第24条命令
+!-n：表示执行历史中的倒数第n条命令
+!!：表示最近执行的那条命令
+!echo：去查找最近一次以echo开头的命令，并执行
+echo $HISTSIZE 查看保存历史命令的大小
+echo $HISTFILE 查看保存历史命令的文件
+echo $HISTCONTROL
+export HISTCONTROL=ignorespac：忽略空格
+export HISTCONTROL=ignoredups：忽略重复命令
+export HISTCONTROL=ignoreboth：忽略空格和重复命令
+
+调用上一条命令的最后一个参数：
+Esc . （先按Esc，然后松开，再按.）
+Alt . （一起按，远程终端可能不支持）
+!$
+
+
+文件名通配：
+   glob
+   特殊字符，元字符，不表示字符的表面含义，而是能匹配符合特征的字符串
+    *：任意长度的任意字符
+       a*b：匹配如下
+	[root@localhost test2]# touch a ab aab acb accb acdb abcd
+	[root@localhost test2]# ls
+	a  aab  ab  abcd  acb  accb  acdb
+	[root@localhost test2]# ls a*b
+	aab  ab  acb  accb  acdb
+    ?：任意单个字符
+       a?b：匹配如下
+	[root@localhost test2]# ls a?b
+	aab  acb
+    []：匹配指定范围内的任意单个字符
+       a[axy]b：匹配如下
+	[root@localhost test2]# ls a[axy]b
+	aab
+       [:alnum:] 匹配任意一个字母或数字
+       [:alpha:] 匹配任意一个字母
+       [:digit]	匹配任意一个数字
+       [:lower:] 匹配任意一个小写字母
+       [:upper:] 匹配任意一个大写字母
+       [:space:] 空格
+    [^]：指定范围之外的任意单个字符
+
+
+grep：Global Regular Expression Printing
+    选项：
+         -v：显示不被模式匹配的行
+	 -i：不区分字符大写写
+	 -o：只显示匹配到的内容
+	 -E：扩展的表达式（等同于egrep）
+    grep 'PATTERN'
+    grep "PATTERN"：如果要进行变量替换使用"，否则'或者"都行。
+文本过滤工具：能够实现根据指定的“模式（Pattern）”逐行匹配文件中的内容，并将匹配的行显示出来。
+模式：是由正则表达式的元字符，其它字符组成的匹配条件
+RE：
+    Base RE
+    Extended RE
+	[root@localhost tmp]# ifconfig | grep 'inet addr' | cut -d: -f2 | cut -d' ' -f1
+	192.168.0.10
+	127.0.0.1
+基本正则表达式元字符：
+  .：匹配任意单个字符(除换行符) 
+	[root@localhost tmp]# grep 'c..u' /proc/cpuinfo --color=auto
+  []：匹配指定范围内的任意单个字符
+  [^]；匹配指定范围外的任意单个字符
+次数匹配
+  *：匹配重复零次或多次前一字符。默认贪婪模式
+  ?：匹配零或一个前面的字符。它一般用于匹配单个字符。用grep -E 或者egrep 就可以达到效果，在传统的grep里，是不支持问号的。
+  \{m,n\}：
+	\{m,\}：至少m次
+	\{0,n\}：至多n次
+	\{m\}：m次
+  \(\)：分组
+	x\(ab\)*y
+	后向引用，\1~\9
+		[root@localhost test1]# grep "\(l..e\).*\1r" e.txt --color=auto
+		He love his lover
+		She like her liker
+		[root@localhost test1]# cat e.txt
+		He love his lover
+		She like her liker
+		He love his liker
+		She like her lover
+	example：查找IP
+	[root@localhost grep_test]# ifconfig | grep '\([[:digit:]]\{1,3\}\.\)\{3\}\([[:digit:]]\{1,3\}\)' --color=auto -o
+	192.168.0.10
+	192.168.0.255
+	255.255.255.0
+	127.0.0.1
+	255.0.0.0
+	[root@localhost grep_test]# ifconfig | egrep '([[:digit:]]{1,3}\.){3}([[:digit:]]{1,3})' --color=auto -o
+	192.168.0.10
+	192.168.0.255
+	255.255.255.0
+	127.0.0.1
+	255.0.0.0
+
+锚定符：
+单词锚定
+  \<：锚定词首
+  \>：锚定词尾
+	[root@localhost test1]# grep "\<r..t" e.txt
+	this is root
+	[root@localhost test1]# grep "r..t\>" e.txt
+	this is root
+	[root@localhost test1]# grep "is\>" e.txt
+	this is root
+	there is chrot
+行首锚定：^
+行尾锚定：$
+	[root@localhost test1]# grep ot$ e.txt
+	this is root
+	there is chrot
+	[root@localhost test1]# grep ^th e.txt
+	this is root
+	there is chrot
+
+
+bash变量类型：
+    本地变量：
+	作用范围仅限于当前程序文件
+	仅对当前shell进程有效，对子shell无效
+	赋值表达式：= ，age=23
+    环境变量：
+	作用范围是当前shell及其子shell
+	export VARNAME
+	exprot VARNAME=value：直接声明
+	declare -x VARNAME=value
+	  查看所有环境变量：env、printenv、export
+	      export PS1='[\u@\H \w]\$'：定义显示路径
+    特殊变量：
+        $?：引用上一个变量执行状态返回值
+	   程序的返回值：
+	       程序自身执行的返回值
+	       程序执行状态返回值：0表示成功，1-255失败（1,2,217系统使用了）
+    位置变量：配置文件
+        bash：
+	     全局：/etc/profile, /etc/profile.d/*, /etc/bashrc
+	     个人：~/.bash_profile, ~/.bashrc
+	bash的运行方式：
+	      交互式：/etc/profile --> /etc/profile.d/* --> ~/.bash_profile --> ~/.bashrc --> /etc/bashrc
+	      非交互式：~/.bashrc --> /etc/bashrc --> /etc/profile.d
+	 profile类：
+		设定环境变量
+		运行命令或脚本
+	 bashrc类：
+		设定本地变量
+		设定命令别名
+	 source 文件：可以简写.
+
+变量的声明和赋值：
+声明：
+declare AGE：
+    -i：声明为整型
+    -a：声明为数组
+    -r：声明变量为只读
+    -x：声明为环境变量
+
+引用变量值：
+${VARNAME}（{}可以省略掉）
+
+撤销变量
+unset VARNAME
+
+只读变量：既不能修改变量值，也不能撤销变量
+readonly VARNAME
+	[root@localhost /]# readonly age=100
+	[root@localhost /]# echo $age
+	100
+	[root@localhost /]# unset age
+	bash: unset: age: cannot unset: readonly variable
+	[root@localhost /]# age=101
+	bash: age: readonly variable
+
+变量名：只能包含字母、数字和下划线
+
+变量赋值
+    a=10
+    age="$a"
+    var1=${var2-default}：AGE=${a-0}
+
+变量替换
+    用变量的值替换变量名
+        echo "$AGE"
+命令替换
+    用命令的执行结果替换命令：$(COMMAND)=`COMMAND`
+	[root@localhost.localdomain /]#echo "Today is $(date +%F)"
+	Today is 2014-03-29
+	[root@localhost.localdomain /]#echo "Today is `date +%F`"
+	Today is 2014-03-29
+	引用seq命令
+	[root@localhost.localdomain /test]#t1=`seq 1 10`
+	[root@localhost.localdomain /test]#echo $t1
+	1 2 3 4 5 6 7 8 9 10
+
+
+bash中的引号：引用
+    '（单引号）：强引用，不会进行变量替换
+	[root@localhost /]# echo '$age'
+	$age
+    "（双引号）：弱引用，会进行变量替换
+	[root@localhost /]# echo "$age"
+	23
+    ^（反引号）：命令替换
+
+命令别名
+    alias ALIAS=COMMAND
+	[root@localhost ~]# alias cls=clear
+	[root@localhost ~]# cls
+	[root@localhost ~]# unalias cls
+	[root@localhost ~]# cls
+	-bash: cls: command not found
+
+	[root@localhost ~]# alias cdnet='cd /etc/sysconfig/network-scripts/'
+	[root@localhost ~]# cdnet
+	[root@localhost network-scripts]#
+
+
+输入、输出重定向、管道
+    程序的默认输入设备，叫标准输入，stdin，键盘。0
+    程序的默认输出设备，叫标准输出，stdout，mintor。1
+    程序的默认错误信息输出设备，标准错误输出，stderr，mintor。2
+输出重定向：
+  COMMAND > FILE，默认覆盖输出（set -C：关闭覆盖输出功能，set +C）
+  COMMAND >| FILE，使set -C无效
+  COMMAND >> FILE，追加输出
+输入重定向：
+  COMMAND < FILE：如cat，tr
+	[root@localhost dev]# tr 'a-z' 'A-Z' < /etc/passwd
+	ROOT:X:0:0:ROOT:/ROOT:/BIN/BASH
+	BIN:X:1:1:BIN:/BIN:/SBIN/NOLOGIN
+  COMMAND << "EOF"
+	example 1：
+	[root@localhost tmp]# cat >> out.eof << EOF
+	> 11111
+	> 2222
+	> 3333
+	> 44444
+	> EOF
+	[root@localhost tmp]# cat out.eof
+	11111
+	2222
+	3333
+	44444
+	
+	example 2：
+	vi c.sh 并输入以下内容
+	#!/bin/bash
+	cat << EOF
+	What do you want to eat?
+	1. apple
+	2. egg
+	3. banana
+	EOF
+	[root@localhost test1]# vi c.sh
+	[root@localhost test1]# ls
+	a.sh  b.sh  c.sh  tmp
+	[root@localhost test1]# bash c.sh
+	What do you want to eat?
+	1. apple
+	2. egg
+	3. banana
+	[root@localhost test1]# ls
+	a.sh  b.sh  c.sh  tmp
+错误输出：
+  COMMAND 2> FILE
+  COMMAND 2>> FILE
+正确或者错误统统重定向：
+  COMMAND > FILE 2> &1
+  COMMAND > FILE 2> FILE2
+  COMMAND &> FILE
+管道：只传递正确执行的结果
+  COMMAND1 | COMMAND2 | COMMAND3... | COMMANDN
+	[root@localhost tmp]# echo 'the first line' | tr 'a-z' 'A-Z'
+	THE FIRST LINE
+	[root@localhost tmp]# echo 'the first line' | tr 'a-z' 'A-Z' | cut -d' ' -f2
+	FIRST
+	[root@localhost tmp]# result=`echo 'the first line' | tr 'a-z' 'A-Z' | cut -d' ' -f2`
+	[root@localhost tmp]# echo $result
+	FIRST
+
+uniq
+tee：将标准输入复制到每个指定文件，并显示到标准输出。
+  COMMAND1 | tee file | COMMAND2
+	[root@localhost tmp]# ls . | tee tee.out | tr 'a-z' 'A-Z'
+	OUT.EOF
+	OUT.ERR
+	OUT.ETC
+	TEE.OUT
+	TEST
+	[root@localhost tmp]# cat tee.out
+	out.eof
+	out.err
+	out.etc
+	tee.out
+	test
+
+/dev/null：数据黑洞
+	[root@localhost test4]# ! id hadoop &> /dev/null && useradd hadoop
+/dev/zero：泡泡机
+/dev/random
+/dev/urandom
+
+
+/etc/passwd
+    用户名：密码站位符：UID：GID（用户所属的基本组的ID）：用户finger信息（注释信息）：用户的家目录：用户默认使用的shell
+    [root@localhost test1]# cat /etc/passwd
+    root:x:0:0:root:/root:/bin/bash
+    bin:x:1:1:bin:/bin:/sbin/nologin
+    daemon:x:2:2:daemon:/sbin:/sbin/nologin
+创建用户
+    useradd [option] USERNAME
+       -u：UID
+       -g：GID，为用户指定一个已经存在的组为其基本组
+       -G：GID，为用户指定一个或者多个已经存在的组为其附加组
+       -c：指定注释信息
+       -d：/path/to/somewhere，家目录，不能事先已经存在，否则不会复制隐藏文件
+       -s：/path/to/shell，指定shell。可用shell，一般要求是出现在/etc/shells
+       -r：创建系统用户，1-499
+	[root@localhost test1]# useradd hsdoop
+	[root@localhost test1]# useradd mysql
+	[root@localhost test1]# tail -2 /etc/passwd
+	hsdoop:x:500:500::/home/hsdoop:/bin/bash
+	mysql:x:501:501::/home/mysql:/bin/bash
+	[root@localhost test1]# tail -2 /etc/group
+	hsdoop:x:500:
+	mysql:x:501:
+    adduser
+设定密码
+    passwd [option][USERNAME]（不输入则修改自己密码）
+        -l：lock
+	-u：unlock
+	--stdin：更改输入管道，一般可以用于脚本中自动创建用户并设置密码
+		[root@localhost ~]# echo "hello" | passwd --stdin hsdoop
+		更改用户 hsdoop 的密码 。
+		passwd： 所有的身份验证令牌已经成功更新。
+/etc/shadow
+    用户名：密码（!!表示禁用（$6（密码算法类型）$FgIlTkOB（添加的随机字符）$（密码）NcW））：密码最近的一次修改时间（以1970计算天数）：密码最短使用期限：密码最长使用期限（相对于上次修改密码时间天数）：在密码过期之前多少天发送警告信息：禁用用户的宽限期：用户的有限期限（过期时间）：保留，无意义
+	[root@localhost hsdoop]# tail -2 /etc/shadow
+	hsdoop:$6$FgIlTkOB$NcWju1x2it0EbAufwWQ38Mhzq99SdxF28iYdcm3.supAoG5K2lZpi83hoGuY1WGQDe4ehxgtExQHMBAlHoW6W1:16158:0:99999:7:::
+	mysql:!!:16158:0:99999:7:::
+        加密方式：单向加密
+	    单向加密的特性：
+	        定长输出
+		雪崩效应
+		明文一致，结果就一致
+		不可逆
+		算法：md5（Message Degist，128bit）、sha1（secure hash Algorithm，160bit）
+		salt：
+	 密码设定策略：
+	     随机密码
+	     至少应该包含四类字符中的三种
+	     长度8位以上
+	     定期修改
+
+查看命令：
+[root@localhost ~]# id hsdoop
+[root@localhost ~]# finger hsdoop
+[root@localhost ~]# who
+[root@localhost ~]# w
+[root@localhost ~]# whoami
+
+修改用户属性：
+usermod
+chage
+chfn
+chsh
+change
+删除用户：
+userdel [option] USERNAME
+    -r：同时删除用户家目录
+
+/etc/group
+    组名：组密码占位符：GID：以此组为其额外组用户的用户列表
+	[root@localhost test1]# cat /etc/group
+	root:x:0:
+	bin:x:1:bin,daemon
+	daemon:x:2:bin,daemon
+创建组
+    groupadd [option] GROUPNAME
+	-g：GID
+	-r：
+修改组
+    groupmod
+删除组
+    groupdel
+给组添加密码
+    gpasswd
+newgrp GRP_NAME：切换基本组
+
+user  group other
+属主  属组  其它
+r=4, w=2, x=1
+可读（r），可写（w），可执行（x）
+
+rwx：（8进制表示）
+---, 000, 0
+--x, 001, 1
+-w-, 010, 2
+-wx, 011, 3
+r--, 100, 4
+r-x, 101, 5
+rw-, 110, 6
+rwx, 111, 7
+
+以.开头的文件被系统视为隐藏文件，仅用ls命令是看不到他们的，而用ls -a除了显示 一般文件名外，连隐藏文件也会显示出来。
+ls -l(这个参数是字母L的小写，不是数字1)
+这个命令可以使用长格式显示文件内容，如果需要察看更详细的文件资料，就要用到ls -l这个指令。例如我在某个目录下键入ls -l可能会显示如下信息(一共7个栏位)：
+文件属性 文件数 拥有者 所属的group 文件大小 建档日期 文件名
+drwx------ 2 Guest users 1024 Nov 21 21:05 Mail
+-rwx--x--x 1 root root 89080 Nov 7 22:41 tar*
+-rwxr-xr-x 1 root bin 5013 Aug 15 9:32 uname*
+lrwxrwxrwx 1 root root 4 Nov 24 19:30 zcat->gzip
+-rwxr-xr-x 1 root bin 308364 Nov 29 7:43 zsh*
+-rwsr-x--- 1 root bin 9853 Aug 15 5:46 su*
+
+第一个栏位，表示文件的属性。Linux的文件基本上分为三个属性：可读(r)，可写(w)，可执行(x)。但是这里有十个格子可以添(具体程序实现时，实际上是十个bit位)。第一个小格是特殊表示格，表示目录或连结文件等等，d表示目录，例如drwx------;l表示连结文件，如 lrwxrwxrwx;如果是以一横"-"表示，则表示这是文件。其余剩下的格子就以每3格为一个单位。因为Linux是多用户多任务系统，所以一个文件可能同时被许多人使用，所以我们一定要设好每个文件的权限，其文件的权限位置排列顺序是(以-rwxr-xr-x为例)：
+rwx(Owner)r-x(Group)r-x(Other)
+
+这个例子表示的权限是：使用者自己可读，可写，可执行;同一组的用户可读，不可写，可执行;其它用户可读，不可写，可执行。另外，有一些程序属性的执行部分不是x,而是s,这表示执行这个程序的使用者，临时可以有和拥有者一样权力的身份来执行该程序。一般出现在系统管理之类的指令或程序，让使用者执行时，拥有root身份。
+第二个栏位，表示文件个数。如果是文件的话，那这个数目自然是1了，如果是目录的话，那它的数目就是该目录中的文件个数了。
+第三个栏位，表示该文件或目录的拥有者。若使用者目前处于自己的home,那这一栏大概都是它的账号名称。
+第四个栏位，表示所属的组(group)。每一个使用者都可以拥有一个以上的组，不过大部分的使用者应该都只属于一个组，只有当系统管理员希望给予某使用者特殊权限时，才可能会给他另一个组。
+第五栏位，表示文件大小。文件大小用byte来表示，而空目录一般都是1024byte，你当然可以用其它参数使文件显示的单位不同，如使用ls -k就是用kb莱显示一个文件的大小单位，不过一般我们还是以byte为主。
+第六个栏位，表示创建日期。以"月，日，时间"的格式表示，如Aug 15 5:46表示8月15日早上5:46分。
+第七个栏位，表示文件名。我们可以用ls -a显示隐藏的文件名。
+
+更改文件权限（mode）：
+chmod [option] perm FILE ...
+    -R, --recursive 以递归方式更改所有的文件及子目录
+    perm的指定方法：
+        1)：同时修改三类权限，既8进制
+		[root@localhost test2]# touch a.txt
+		[root@localhost test2]# ll
+		总用量 0
+		-rw-r--r--. 1 root root 0 3月  30 01:14 a.txt
+		[root@localhost test2]# chmod 777 a.txt
+		[root@localhost test2]# ll
+		总用量 0
+		-rwxrwxrwx. 1 root root 0 3月  30 01:14 a.txt
+        2)：类别范围，=
+	    chmod u/g/o=rwx file，chmod ug/uo/go/ugo=rwx file
+		[root@localhost test3]# ll
+		总用量 0
+		--w---x---. 1 root root 0 3月  30 01:16 a.txt
+		[root@localhost test3]# chmod u=rwx a.txt
+		[root@localhost test3]# ll
+		总用量 0
+		-rwx--x---. 1 root root 0 3月  30 01:16 a.txt
+	3）：只操作某类用户的某位权限，+/-
+		[root@localhost test3]# chmod 777 a.txt
+		[root@localhost test3]# ll
+		总用量 0
+		-rwxrwxrwx. 1 root root 0 3月  30 01:16 a.txt
+		[root@localhost test3]# chmod u-w a.txt
+		[root@localhost test3]# ll
+		总用量 0
+		-r-xrwxrwx. 1 root root 0 3月  30 01:16 a.txt
+		[root@localhost test3]# chmod u-x,g-r,o-rwx a.txt
+		[root@localhost test3]# ll
+		总用量 0
+		-r---wx---. 1 root root 0 3月  30 01:16 a.txt
+		[root@localhost test3]# chmod u+w a.txt
+		[root@localhost test3]# ll
+		总用量 0
+		-rw--wx---. 1 root root 0 3月  30 01:16 a.txt
+
+改变文件属主属组：只有管理员才有权限改变文件的属主、数组
+chown [option] USERNAME FILE ...
+chown [USERNAME]:[GRNAME] FILE ...
+chown [USERNAME].[GRNAME] FILE ...
+chgrp [option] USERNAME FILE ...
+
+
+用户切换：su（switch user） -- exit（退回）
+su USERNAME：非登录式切换，仅仅是将登录的用户名和用户身份更改了，而用户的环境变量和设置没有更改，保留了切换之前用户的设置信息。只有管理员可以随意切换，不需要输入密码。
+su - USERNAME：登录式切换
+su -l USERNAME：登录式切换
+su USERNAME -c 'COMMAND'
+su USERNAME -c "COMMAND"
+
+
+高级权限FACL控制
+ext ACL：access control list
+文件系统的ACL：
+    getfacl FILE：查看文件的ACL权限信息
+    setfacl
+        -R：递归修改
+    setfacl -m u:UID:MODE FILE：为文件添加某用户具有某个权限
+	[hadoop@localhost data]$ getfacl fstab
+	# file: fstab
+	# owner: hadoop
+	# group: hadoop
+	user::rw-
+	group::r--
+	other::r--
+	[hadoop@localhost data]$ setfacl -m u:openstack:rw- fstab
+	[hadoop@localhost data]$ getfacl fstab
+	# file: fstab
+	# owner: hadoop
+	# group: hadoop
+	user::rw-
+	user:openstack:rw-
+	group::r--
+	mask::rw-
+	other::r--
+    setfacl -m g:GID:MODE FILE：为文件添加某组具有某个权限
+    setfacl -x u:UID FILE：为文件删除某用户的权限
+    setfacl -x g:GID FILE：为文件删除某组的权限
+	[hadoop@localhost data]$ setfacl -x u:openstack fstab
+	[hadoop@localhost data]$ getfacl fstab
+	# file: fstab
+	# owner: hadoop
+	# group: hadoop
+	user::rw-
+	group::r--
+	mask::r--
+	other::r--
+	[hadoop@localhost data]$ setfacl -m g:mygrp:rwx fstab
+	[hadoop@localhost data]$ getfacl fstab
+	# file: fstab
+	# owner: hadoop
+	# group: hadoop
+	user::rw-
+	group::r--
+	group:mygrp:rwx
+	mask::rwx
+	other::r--
+    setfacl -m d:u:UID:MODE FILE：设置目录具有继承权限（组同理设置）
+	[hadoop@localhost data]$ mkdir test
+	[hadoop@localhost data]$ ls -ld test
+	drwxrwxr-x. 2 hadoop hadoop 4096 Apr  5 04:08 test
+	[hadoop@localhost data]$ getfacl test
+	# file: test
+	# owner: hadoop
+	# group: hadoop
+	user::rwx
+	group::rwx
+	other::r-x
+	[hadoop@localhost data]$ setfacl -m d:u:openstack:rw- test
+	[hadoop@localhost data]$ getfacl test
+	# file: test
+	# owner: hadoop
+	# group: hadoop
+	user::rwx
+	group::rwx
+	other::r-x
+	default:user::rwx
+	default:user:openstack:rw-
+	default:group::rwx
+	default:mask::rwx
+	default:other::r-x
+	[hadoop@localhost data]$ touch test/a.txt
+	[hadoop@localhost data]$ getfacl test/a.txt
+	# file: test/a.txt
+	# owner: hadoop
+	# group: hadoop
+	user::rw-
+	user:openstack:rw-
+	group::rwx                      #effective:rw-
+	mask::rw-
+	other::r--
+    
+    挂载设备ACL权限操作：
+        mount -o acl /source_path /to_path
+	mount：查看
+	vi /etc/fstab：编辑新增一行，使其能够开机自动挂载。（defaults,acl）
+	tune2fs -l /path
+	tune2fs -o user_xattr,acl /path：设定一个或者多个
+	tune2fs -o ^user_xattr /path：删除某一个
+
+
+find
+    -name pattern 基本的文件名(起始的目录已经检测过了)匹配shell通配符pattern.元字符('*', '?', 和'[]')不能匹配一个以'.'开头的文件名。忽略在它下边的目录或文件,用-prune;参看-path描述中的例子。
+    -iname pattern 同-name,但是匹配是大小些不区分的。
+    -empty 文件是空的，它是一个正规的文件或目录。
+    -user uname 文件是属于名为uname(数字型ID也可)的用户。
+    -uid n 文件的数字型用户ID是n
+    -group gname 文件属于组gname(允许数字型的gname)
+    -gid n　文件的数字型组ID是n
+    -nouser 没有用户符合文件的数字型用户ID（被删除的用户）
+    -nogroup 没有组符合文件的数字型组ID（被删除的组）
+    -type c
+	文件是类型c:
+	b 块(缓冲)设备.
+	c 字符设备.
+	d 目录.
+	p 有名管道(FIFO).
+	f 规则文件.
+	l 符号链结.
+	s 插座.
+    -size [+][-]n[bckw] 文件占用n个单元空间。在缺省时或n后边跟着字符b时，这个单元是512字节的块，n后边跟着c是字节，n后边跟着k是千字节，n后边跟着w是两个字节的词。文件大小不能计算间接的块，但是能计算很少的没能实际分配大小的文件。（大小进行圆整舍入计算）+表示大于，-表示小于
+	[root@localhost grep_test]# ll -lh `find /etc -size +2k`
+    
+    -perm mode 文件的访问权限位恰好是mode(八进制或符号).符号模式用模式0做为开始。（精确）
+    -perm -mode 文件的所有访问权限位mode都设了。（ALL）
+    -perm /mode 任何一位(Any)
+
+    组合查找条件
+        -a：与
+	-o：或
+	!/-not：非
+		[root@localhost grep_test]# find /home -nouser -a -nogroup
+		[root@localhost grep_test]# vi /home/ray/a.txt
+		[root@localhost grep_test]# ls -l /home/ray
+		total 4
+		-rw-r--r--. 1 root root 11 Mar 31 07:01 a.txt
+		-rw-r--r--. 1 ray  ray   0 Mar 31 06:46 b.txt
+		[root@localhost grep_test]# find /home/ray -not \( -user ray -o -empty \)
+		/home/ray/a.txt
+		[root@localhost grep_test]# find /home/ray \( -user ray -o -empty \)
+		/home/ray/b.txt
+    -ls：值为真;用 'ls -dils'格式在标准输出中列出当前目录的文件
+    -print：值为真;在标准输出上输出整个文件名,并加一个新行。（find命令默认情况下的动作）
+    -print0：值为真;在标准输出上输出整个文件名,并加一个空字符。这将允许其它程序能正确的处理在FIND输出中包含新行的文件名。
+    -printf format：参考文档
+    -exec command ;
+        执行命令;返回的状态值为零则为真。所有在这之后的参数都是command的参数,直到遇到';'.字符串'{}'将被当前的文件名代替,作为当前命令的参数,并不是象一些版本FIND一样是个单独存在的一个参数,这些语句应该被转义(用'')或被引用,以此来保护他们被SHELL展开。这个命令将在起始目录被执行。
+	    [root@localhost ~]# find -name 'a.txt' -exec cat {} \;
+	    this is grep_test/a.txt
+	    HELLO,JERRY!!!
+	    [root@localhost ~]# find -name 'a.txt' -exec ls -l {} \;
+	    -rw-r--r--. 1 root root 24 Apr  5 00:37 ./grep_test/a.txt
+	    -rw-r--r--. 1 root root 15 Apr  4 22:44 ./a.txt
+	    [root@localhost ~]# find -name 'a.txt' -exec rm {} \; #注意rm不会提示，可以下面的-ok命令进行安全删除（会提示）
+	    [root@localhost ~]# find -name 'a.txt' -ok rm {} \;
+
+
+
+显示信息
+echo：自动换行
+    -n：不换行
+    -e：让转义字符生效（\n \r \t 等）
+printf：不自动换行
+
+
+bash算术运算（以下仅支持整数运算，会四舍五入）
+	[root@localhost test4]# declare -i sum=2+3
+	[root@localhost test4]# echo $sum
+	5
+	[root@localhost test4]# let sum=2*3
+	[root@localhost test4]# echo $sum
+	6
+	[root@localhost test4]# sum=`expr 2+4`
+	[root@localhost test4]# echo $sum
+	6
+	[root@localhost test4]# sum=$[2*4]
+	[root@localhost test4]# echo $sum
+	8
+	[root@localhost test4]# sum=$((2+5))
+	[root@localhost test4]# echo $sum
+	7
+	[root@localhost test4]# days=$[$(date +%s)/24/60/60]
+	[root@localhost test4]# echo $days
+	16158
+浮点计算可以使用bc
+
+
+逻辑运算
+[root@localhost test4]# userdel -r hsdoop
+[root@localhost test4]# ls /home
+hadoop  jerry
+[root@localhost test4]# (id hsdoop &> /dev/null && echo 'user exists') || (useradds hsdoop && echo 'user add success')
+-bash: useradds: command not found
+[root@localhost test4]# (id hsdoop &> /dev/null && echo 'user exists') || (useradds hsdoop && echo 'user a^C success')
+[root@localhost test4]# ls /home
+hadoop  jerry
+[root@localhost test4]# (id hsdoop &> /dev/null && echo 'user exists') || (useradd hsdoop && echo 'user add success')
+user add success
+
+test expression
+[ expression ]
+[[ expression ]]
+整数比较
+   -eq：等于，用法num1 -eq num2
+   -ne：不等于
+   -gt：大于
+   -lt：小于
+   -ge：大于或等于
+   -le：小于或等于
+	[root@localhost test4]# test 2 -eq 3
+	[root@localhost test4]# echo $?
+	1
+	[root@localhost test4]# test 2 -eq 2
+	[root@localhost test4]# echo $?
+	0
+	[root@localhost test4]# [ 2 -gt 3 ] && echo "2>3" || echo "2<3"
+	2<3
+	[root@localhost test4]# [[ 2 -gt 3 ]] && echo "2>3" || echo "2<3"
+	2<3
+字符串比较
+    'STRING1' == 'STRING2'：等于
+	[root@localhost test4]# [ 'ss' == 'ss' ] && echo 'equals' || echo 'not equals'
+	equals
+	[root@localhost test4]# [ 'ss' == 'ss1' ] && echo 'equals' || echo 'not equals'
+	not equals
+    !=, <>：不等于
+	[root@localhost test4]# [ 'ss' != 'ss1' ] && echo 'not equals' || echo 'equals'
+	not equals
+	[root@localhost test4]# [ 'ss' <> 'ss1' ] && echo 'not equals' || echo 'equals'
+	not equals
+     -n "$A"：判断字符串是否不为空
+     -z "$A"：判断字符串是否为空
+	[root@localhost test4]# [ -z "$MYHOST" ] && MYHOST=`hostname`
+	[root@localhost test4]# echo $MYHOST
+	localhost.localdomain
+	[root@localhost test4]# [ -z "$MYHOST" ] && MYHOST='www.baidu.com'
+	[root@localhost test4]# echo $MYHOST
+	localhost.localdomain
+文件测试
+    -e /path  文件或目录是否存在
+    -f /path  是否为文件
+    -d /path  是否为目录
+    -l /path  是否为链接
+    -r /path  是否有读权限
+    -w /path  是否有写权限
+    -x /path  是否有可执行
+   以上命令可以进行组合：
+      !   取反
+      -a  与条件
+      -o  或条件
+
+
+文本编辑器
+    行编辑器：sed（Stream Editor）
+    全屏编辑器：nano，emacs，vi（visual interface），vim（vi improved）
+
+vi编辑器：模式化编辑器
+    编辑模式：（默认打开文件的时候进入此模式）
+        dd  直接删除光标所在行
+	x   删除光标处的一个字符
+	#x  删除光标处开始的n个字符，包含当前光标处的字符
+	X   删除光标前的一个字符
+	d   搭配其它键进行组合删除
+
+	p   粘帖。
+	    删除或者复制的是整行，则在当前光标所在行下方粘帖
+	    删除的单词或行的部分，则在当前光标所在处后方粘帖
+	P   粘帖。
+	    删除或者复制的是整行，则在当前光标所在行上方粘帖
+	    删除的单词或行的部分，则在当前光标所在处前方粘帖
+	y   复制。支持w, b, e, ^, 0, $等组合起来
+	yy  复制整行
+	#yy 
+	     【进入可视化模式】
+	         v：按字符选取
+		 V：按行选取
+        c   先删除指定范围内的内容，再切换到输入模式。支持组合键
+	u   撤销最近的操作
+	#u  撤销最近的n次操作
+	Ctrl+r  撤销最后的撤销操作
+
+	:   切换到末行模式
+        ZZ  保存并退出
+        
+	h   向左移动光标
+	j   向下移动光标
+	k   向上移动光标
+	l   向右移动光标
+	
+	w   光标跳转到下一个单词词首
+	#w  光标跳转到下n（取决于w之前输入的数字）个单词词首，只能生效一次
+	e   光标跳转到下一个单词词尾（如果当前单词不在词尾，先跳转到当前单词词尾）
+	b   光标跳转到下一个单词词首（如果当前单词不在词首，先跳转到当前单词词首）
+	
+	^   跳转到行首的非空字符上
+	0   跳转到行首，不管第一个字符是什么
+	$   跳转到行尾
+
+	#G  跳转到第n行的行首
+	G   跳转到文件的最后一行行首
+
+	Enter键  跳转到下一行行首
+	Ctrl+f  向下滚动一屏, Forward
+	Ctrl+b  向上滚动一屏, Backward
+	Ctrl+d  向下滚动半屏, Downward
+	Ctrl+u  向上滚动半屏, Upward
+    输入模式：
+        i  当前光标所在字符前面插入
+	a  当前光标所在字符后面插入
+	o  当前光标所在行的下方新增空白行，并插入
+	I  当前光标所在行的行首插入
+	A  当前光标所在行的行尾插入
+	O  当前光标所在行的上方新增空白行，并插入
+	ESC键  切换到编辑模式
+    末行模式：
+        ESC键（稍等一会）/ESC键（两次）  切换到编辑模式
+        q   退出，没有修改的时候
+        q!  不保存退出
+        wq  保存并退出
+        w!  强制保存
+	NUM  v 输入任意数字，直接跳转到第NUM行的行首
+	NUM1,NUM2d  删除第n1行到n2行，定界
+	    .  表示当前行
+	    $  表示文件尾部的行
+	    +#   表示向下加几行进行删除
+	    -#   表示向上加几行进行删除
+	/PATTERN1/,/PATTERN2/d 模式匹配删除
+
+	搜索关键字：
+            /KEYWORD：从文件首部向尾部搜索
+	    ?KEYWORD：从文件尾部向首部搜索
+	       快捷键：
+                n: next
+                N: previos
+	
+	查找并替换：
+	    :定界s/查找的内容/替换的内容/gi
+	        定界符：
+		    1,$ = % 表示全文查找
+	        查找的内容：支持正则表达式
+		替换的内容：不支持正则表达式，但可以使用前向引用
+		    &   用于引用查找到的整个字符串
+		修饰符：gi
+		    g：全局替换
+		    i：忽略大小写
+	     example：1,20s/if/JERRY/g   （在1~20行中查找if并替换为JERRY）
+	              %s/\/etc\/sysconfig\/network/&s/g
+
+        !shell command  可以实现直接执行shell命令了
+	
+	定界符w /path/to/filename  可以将某些内容另存
+	
+窗口拆分：
+Ctrl+w, s：水平拆分
+Ctrl+w, v：垂直拆分
+Ctrl+w, 方向键：窗口位置调换
+Ctrl+w, q：退出窗口拆分
+
+vi +[数字] file：打开文件并让光标处于某一行，如果不输入数字，则让光标处于最后一行
+vi +/PATTERN file：光标定位到匹配PARRERN的行首
+vi打开多个文件
+    vi file1 file2 ...
+       :next 切换至后一个文件
+       :prev 切换至前一个文件
+       :first 切换至第一个文件
+       :last 切换至最后一个文件
+    退出和单个文件一样，只需要在后面加all
+       :wqall，q!all等
+
+定制vi的工作属性：
+:set [no]nu  [关闭]打开行号
+:set [no]ai  [关闭]打开缩进
+:set [no]ic  [关闭]打开忽略大小写
+:set [no]hlsearch  [关闭]打开高亮搜索文字
+:set [all]   查看更多的options
+:syntax on/off 语法着色
+
+vi全局配置文件：/etc/virc
+vi用户配置文件：~/.virc（如果没有，创建即可）
+vimtutor：vim练习工具
+
+
+sed命令：（Stream editor）行编辑器，不会修改源文件
+sed [option] 'script' input_file
+sed -f 'script_file' input_file
+    'script':'ADDRESScommand [para]'
+	ADDRESS:
+	    1、缺省表示所有行
+	    2、地址定界：
+		LINE1,LINE2
+		    1,7：从第一行到第七行
+		    1,+6：从第一行再加六行
+		    3：只处理第三行
+		    /PATTERN/：regexp（基本正则表达式）
+		        [root@localhost ~]# sed '/\//d' /etc/fstab
+        command:
+	    d：删除
+		[root@localhost ~]# sed '1,3d' /etc/fstab
+	    p：打印
+	    a \：追加，在符合条件所在行后面新增加一行
+	        [root@localhost ~]# sed '/\//a \#this is a/line.' /etc/fstab
+	    i \：插入，在符合条件所在行前面新增加一行
+	    c \：替换，将符合条件所在行替换成指定内容
+	    r /path/to/somefile：追加一行从其它文件
+	        [root@localhost ~]# sed '/\//r /root/a.txt' /etc/fstab
+	    w /path/to/somefile：将匹配到的内容写入某个文件
+	        [root@localhost ~]# sed '/\//w /root/write.txt' /etc/fstab
+            s/regexp/replacement/：查找内容并替换
+	        [root@localhost ~]# sed 's/^My/You/g' input_file
+		#命令末端的g表示在行内进行全局替换，也就是说如果某行出现多个My，所有的My都被替换为You。
+		[root@localhost ~]# sed 's/^[[:space:]]\{1,\}\([^[:space:]]\{1,\}\)/\1/' /boot/grub/grub.conf
+	    =：显示符合条件的行号
+	        [root@localhost ~]# sed '/\//=' /etc/fstab
+		[root@localhost ~]# sed '=' /etc/fstab
+	    y/source/dest/：逐个字符进行替换（相当于tr命令）
+	        sed '1,20y/hrwang12/HRWANG^$/' datafile
+		#将1到20行内，所有的小写hrwang转换成大写，将1转换成^,将2转换成$。
+		#正则表达式元字符对y命令不起作用。与s命令的分隔符一样，斜线可以被替换成其它的字符。
+     
+     option：
+         -n：静默模式
+	 -i：直接修改源文件
+	     [root@localhost ~]# sed -i 's/^[[:space:]]\{1,\}\([^[:space:]]\{1,\}\)/\1/' grub.conf
+	 -e：-e 'script1' -e 'script2' ...
+	     [root@localhost ~]# sed -e 's/^[[:space:]]\{1,\}\([^[:space:]]\{1,\}\)/\1/' -e 's/\<default\>/DEFAULT/' /boot/grub/grub.conf
+	 -f /path/to/sciprt_file：读取sed脚本文件
+	     [root@localhost ~]# cat sed_script_1
+	     s/^[[:space:]]\{1,\}\([^[:space:]]\{1,\}\)/\1/
+	     s/\<default\>/DEFAULT/
+	     [root@localhost ~]# sed -f sed_script_1 /boot/grub/grub.conf
+	 -r：扩展正则表达式
+
+awk：
+  new awk：nawk
+  gawk
+awk [options] 'script' file1, file2, ...
+awk [options] 'PATTERN { action }' file1, file2, ...
+    -F：以指定字符进行分割
+	[root@localhost ~]# cat a.txt
+	welcome to redhat linux
+	how are you?
+	[root@localhost ~]# awk -F' ' '{print $1}' a.txt
+	welcome
+	how
+    $NF：引用分割后的最后一个字段
+	[root@localhost ~]# awk '{print $NF}' a.txt
+	linux
+	you?
+
+
+
+任务计划
+1、指定的时间点执行一次特定的任务
+at：
+   at TIME：回车后输入要执行的命令，按Ctrl+d结束。
+       [root@localhost mail]# at now+10min
+	at> echo "hello world"
+	at> echo "hello, jerry~"
+	at> <EOT>
+	job 4 at 2014-04-05 01:37
+   -q：指定队列
+   -l：查看等待执行的任务，相当于atq
+   -d：删除某个等待执行的任务，相当于atrm
+        [root@localhost mail]# atq
+	4       2014-04-05 01:37 a root
+	[root@localhost mail]# at -d 4
+	[root@localhost mail]# atq
+	[root@localhost mail]#
+   -q queue：使用指定的队列。一个队列用一个字母标定，有效的的队列标定的范围是从a到z和从A到Z。at 的缺省队列是 a,batch 的缺省队列是 b。队列的字母顺序越高，则队列运行时越谦让(运行级别越低)。指定的队列 "=" 保留给当前运行的作业所在的队列。 如果一个作业被提交到一个以大写字母标定的队列，则与提交到 batch 同样对待。如果给 atq 指定一个队列，则只显示在此指定队列中的作业。
+   -f file：从文件而不是标准输入中读取作业信息
+
+   /etc/at.deny：定义了黑名单用户列表，用户不能使用cron。
+   /etc/at.allow：定义了白名单用户列表，用户能够使用cron。
+	1、如果cron.deny和cron.allow这两个文件都不存在则只有管理员能够使用at。
+	2、如果某个用户都存在这两个文件中，则忽略掉deny文件，只有allow生效。
+	3、如果存在了allow文件，则意味着写进去的用户都可以使用at，否则不可以使用at。
+
+batch：
+    不需要指定时间，会自动挑选系统空闲时间段执行任务计划
+
+2、周期性执行某个任务
+crond：服务
+  前提：主机时时在线，crond必须时时运行。
+  任务分类：
+      1、系统cron任务
+          保存位置：/ect/contab
+	  每一行用于定义一个任务，7个字段：vi /etc/contab
+	      分钟 小时 天 月 周 用户 命令
+	      example： 1 1 1 * * root /bin/echo "每月1号1点1分打印一次"
+	        分钟：0-59
+		小时：0-23
+		天：1-31
+		月：1-12
+		周几：0-7
+		时间点的通配符：
+		   *：全部有效取值
+		      10 4 * * *：表示每天4点10分
+		   ,：离散取值
+		      10 4,11 * * *：表示每天4点10分或者11点10分
+		   -：连续取值
+		      10 8-17 * * *：表示每天8点10分、9点10分...17点10分
+		   /#：每#时长
+		      10 */3 * * *：表示每天每三个小时的第10分钟执行一次
+		      */5 * * * *：表示每5分钟执行一次
+      2、用户cron任务
+          保存位置：/var/spool/cron/USERNAME
+	  每一行定义一个任务，6个字段
+	      分钟 小时 天 月 周 命令
+	  crontab：用来编辑用户配置文件，并检查语法错误
+		-e：编辑
+		-u UERNAME：修改其它用户
+		-r：删除整个配置文件
+		-l：查看用户配置文件
+	  
+	  
+	  /etc/cron.deny：定义了黑名单用户列表，用户不能使用cron。
+	  /etc/cron.allow：定义了白名单用户列表，用户能够使用cron。
+	     1、如果cron.deny和cron.allow这两个文件都不存在则只有管理员能够使用cron。
+	     2、如果某个用户都存在这两个文件中，则忽略掉deny文件，只有allow生效。
+	     3、如果存在了allow文件，则意味着写进去的用户都可以使用cron，否则不可以使用cron。
+	  
+	  anacrontab：
+	    保存位置：/etc/anacrontab
+
+
+IP地址
+点分隔，0-255
+0-255.0-255.0-255.0-255
+0000 0000
+1111 1111
+A类IP地址 地址范围1.0.0.0到126.255.255.255
+A类IP地址的子网掩码为255.0.0.0，每个网络支持的最大主机数为256的3次方-2=16777214台。
+A类内部私有地址10.0.0.0--10.255.255.255
+
+B类IP地址地址范围128.0.0.0-191.255.255.255
+B类IP地址的子网掩码为255.255.0.0，每个网络支持的最大主机数为256的2次方-2=65534台。
+B类内部私有地址172.16.0.0--172.31.255.255
+
+C类IP地址范围192.0.0.0-223.255.255.255
+C类IP地址的子网掩码为255.255.255.0，每个网络支持的最大主机数为256-2=254台。
+C类内部私有地址192.168.0.0--192.168.255.255
+
+D类IP地址在历史上被叫做多播地址(multicast address)，即组播地址。在以太网中，多播地址命名了一组应该在这个网络中应用接收到一个分组的站点。多播地址的最高位必须是“1110”，范围从224.0.0.0到239.255.255.255。
+
+特殊的网址
+每一个字节都为0的地址（“0.0.0.0”）对应于当前主机；
+IP地址中的每一个字节都为1的IP地址（“255.255.255.255”）是当前子网的广播地址；
+IP地址中凡是以“11110”开头的E类IP地址都保留用于将来和实验使用。
+IP地址中不能以十进制“127”作为开头，该类地址中数字127.0.0.1到127.255.255.255用于回路测试，如：127.0.0.1可以代表本机IP地址，用“http://127.0.0.1”就可以测试本机中配置的Web服务器。
+网络ID的第一个8位组也不能全置为“0”，全“0”表示本地网络。
+
+
+动态/静态
+TCP/IP，内核中生效
+动态方式：
+    ifconfig
+        设备别名：
+	    eth#：以太网网卡设备。eth0,eth1, ..
+	    lo：回路
+	    ppp#：拨号设备
+	-a：显示所有的设备，包括未生效的。
+	    [root@localhost ~]#  ifconfig -a
+	ifconfig INTERFACE [up|down]：启用/禁用某个设备
+	ifup INTEFACE = ifconfig INTERFACE up
+	ifdown INTERFACE = ifconfig INTERFACE down
+	    [root@localhost ~]#  ifconfig eth0 #单独查看某个设备
+	    [root@localhost ~]#  ifconfig eth0 up
+	    [root@localhost ~]#  ifconfig eth0 down
+	ifconfig INTERFACE IP [netmask MASK]：设置IP地址，子网掩码
+	    [root@localhost ~]# ifconfig eth0 192.168.0.11 netmask 255.255.255.0
+	ifconfig eth0:0 IP netmask MASK：一个接口，多个IP地址
+	    root@localhost ~]# ifconfig eth0:0 192.168.0.11 netmask 255.255.255.0
+    
+    ip
+        [root@localhost ~]# ip addr show
+        [root@localhost ~]# ip link show
+    
+    route
+        [root@localhost ~]# route #查看路由信息
+	-n：以数字形式代替解释主机名形式来显示地址。此项对试图检测对域名服务器进行路由发生故障的原因非常有用。
+	add [-host|-net] DESTINATION netmask MASK gw GATEWAY：添加一条路由
+	add default gw GATEWAY
+	add -net default gw GATEWAY
+	    [root@localhost ~]# route add -net 10.0.0.0/24 gw 192.168.0.1
+	del [-host|-net] DESTINATION：删除一条路由。
+	    [root@localhost ~]# route del -net 10.0.0.0/24
+    
+    /etc/hosts：配置本地DNS解析
+        [root@localhost ~]# vi /etc/hosts
+    /etc/resolv.conf：DNS配置文件
+        [root@localhost ~]# cat /etc/resolv.conf
+        # Generated by NetworkManager
+        nameserver 192.168.0.1
+        [root@localhost ~]# vi /etc/resolv.conf
+
+静态方式：
+[root@localhost ~]# cat /etc/sysconfig/network
+NETWORKING=yes
+HOSTNAME=localhost.localdomain
+
+vi  /etc/sysconfig/network-scripts/ifcfg-eth0   #编辑配置文件,添加修改以下内容，可以参考sysconfig.txt。
+[root@localhost ~]# find / -name 'sysconfig.txt'
+/usr/share/doc/initscripts-9.03.40/sysconfig.txt
+vi  /etc/sysconfig/network-scripts/ifcfg-eth0:0 #一个接口，多个IP地址（DEVICE=eth0:0）
+
+#设备名
+DEVICE="eth0"
+
+#启用静态IP地址{none|static|dhcp|bootp}
+BOOTPROTO=static
+
+#开启自动启用网络连接{yes|no}
+ONBOOT=yes
+
+#设置IP地址
+IPADDR=192.168.0.54
+
+#设置子网掩码
+NETMASK=255.255.255.0
+
+#设置网关
+GATEWAY=192.168.0.1
+
+#设置主DNS
+DNS1=8.8.8.8
+
+#设置备DNS
+DNS2=8.8.4.4
+
+:wq  #保存退出
+
+service network restart  #重启网络连接，或者使用以下方式
+[root@localhost ~]# /etc/init.d/network restart
+
+command命令下的图形化页面配置
+[root@localhost ~]# setup
+[root@localhost ~]# system-config-network-tui
+
+#配置静态dns，route-eth#需要手动创建
+vi /etc/sysconfig/network-scripts/route-eth0
+下面这两种方式不要混合使用，否则只会生效一类
+第一种方式：
+    DESTINATION via GATEWAY
+	[root@localhost ~]# vi /etc/sysconfig/network-scripts/route-eth0
+	[root@localhost ~]# cat /etc/sysconfig/network-scripts/route-eth0
+	10.0.0.0/8 via 114.114.114.114
+	[root@localhost ~]# service network restart
+	[root@localhost ~]# route -n
+	Kernel IP routing table
+	Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+	114.114.114.114 0.0.0.0         255.255.255.255 UH    0      0        0 eth0
+	192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
+	10.0.0.0        114.114.114.114 255.0.0.0       UG    0      0        0 eth0
+	0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+第二种方式：（#替换成数字）
+ADDRESS#=
+NETMASK#=
+GATEWAY#=
+	[root@localhost ~]# vi /etc/sysconfig/network-scripts/route-eth0
+	[root@localhost ~]# cat /etc/sysconfig/network-scripts/route-eth0
+	ADDRESS0=11.0.0.0
+	NETMASK0=255.0.0.0
+	GATEWAY0=192.168.0.1
+	[root@localhost ~]# route -n
+	Kernel IP routing table
+	Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+	192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
+	0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+	[root@localhost ~]# service network restart
+	[root@localhost ~]# route -n
+	Kernel IP routing table
+	Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+	192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
+	11.0.0.0        192.168.0.1     255.0.0.0       UG    0      0        0 eth0
+	0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+
+
+指定静态地址：
+立即生效，但不会永久生效：ifconfig, ip, route
+可永久生效，但不会立即生效：编辑配置文件
+
+路由表：
+    路由条目的类型：
+	默认网关：0.0.0.0
+	网络路由：172.16.0.0/255.255.0.0
+	主机路由：192.168.1.254/255.255.255.0
+    生成条目：
+        动态路由协议：RIP2, OSPF
+	静态指定：route, 配置文件
+
+ping [option]... HOST
+    -c <次数>：指定接收包的次数
+        [root@localhost ~]# ping -c 3 169.254.0.0
+    -s <字节>：包的大小
+    -i <时间>：周期性发送的间隔
+    -w deadline：
+    -W timeout：
+
+traceroute DEST_HOST
+
+
+service, daemon：守护进程
+/etc/init.d/
+/etc/rc.d/init.d/
+
+MAC：Media Access Control
