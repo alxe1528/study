@@ -1053,7 +1053,7 @@ ext ACL：access control list
 	tune2fs -o ^user_xattr /path：删除某一个
 
 
-find
+find [path...] [expression]
     -name pattern 基本的文件名(起始的目录已经检测过了)匹配shell通配符pattern.元字符('*', '?', 和'[]')不能匹配一个以'.'开头的文件名。忽略在它下边的目录或文件,用-prune;参看-path描述中的例子。
     -iname pattern 同-name,但是匹配是大小些不区分的。
     -empty 文件是空的，它是一个正规的文件或目录。
