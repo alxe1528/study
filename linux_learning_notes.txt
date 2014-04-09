@@ -1,3 +1,11 @@
+Linux系统的启动流程：
+POST(CPU，Memory）-->BIOS-->Boot Sequence-->MBR-->Boot Loader（代码）-->Kernel（初始化）
+  BIOS：基本输入/输出系统Basic Input / Output System），保存数据至CMOS。
+  CMOS：互补金属氧化物半导体（Complementary Metal-Oxide-Semiconductor Transistor），需要供电才能工作。
+  MBR：主引导记录（Master Boot Record）
+
+
+
 type COMMAND：判断COMMAND是内部命令还是外部命令
 pwd：显示当前目录
 Linux文件名称规范：除了换行符都可以，一般不建议使用空白，/，?，*。不靠扩展名区分文件类型，目录也是文件，目录不能跟文件同名
@@ -1590,7 +1598,7 @@ command命令下的图形化页面配置
 [root@localhost ~]# setup
 [root@localhost ~]# system-config-network-tui
 
-#配置静态dns，route-eth#需要手动创建
+#配置静态路由，route-eth#需要手动创建
 vi /etc/sysconfig/network-scripts/route-eth0
 下面这两种方式不要混合使用，否则只会生效一类
 第一种方式：
@@ -1658,3 +1666,131 @@ service, daemon：守护进程
 /etc/rc.d/init.d/
 
 MAC：Media Access Control
+
+
+TCP：有连接的协议
+    建立TCP连接，建立了一个专用通信线路
+    HTTP, FTP, SSH
+    端口号：0-65535
+
+UDP：无连接的协议
+    不需要事先建立连接，而是直接发送数据
+    QQ, DNS
+    端口号：0-65535（不会和TCP端口冲突）
+
+iptables：用户空间工具，编写规则
+netfilter：
+    内核中，框架
+    hook function
+        规则链
+        INPUT, OUTPUT, FORWARD, PREROUTING, POSTROUTING
+
+防火墙功能：
+    raw
+    mangle
+    NAT：Network Address Translator
+    filter
+
+DNS
+DNS解析方式：
+1、（A记录）正向：FQDN(Fully Qualified Domain Name：完全限定域名) ==> IP
+2、（PTR记录）反向：IP ==> FQDN
+一个域名可以同时有多个IP，多个域名可以同时对应一个IP。
+一个IP可以同时有多个域名。
+
+SOA：Start Of Authority（起始授权记录）
+NS：Name Server
+MX：Mail eXchanger（邮件交换器）
+    priority：0-99（数字越大，优先级越高）
+
+domain：域，逻辑概念
+zone：区域，物理概念
+
+DNS服务器类型：
+    主服务器
+    辅助服务器
+    缓存服务器
+    转发器
+
+配置DNS服务器：
+yum install bind
+
+vi /etc/named.conf
+options {
+	directory "/var/named";
+};
+zone "." IN {
+	type hint;
+	file "named.ca";
+};
+zone "localhost" IN {
+	type master;
+	file "localhost.zone";
+};
+zone "0.0.127.in-addr.arpa" IN {
+	type master;
+	file "named.local";
+};
+
+chown :named /etc/named.conf
+ls -l /etc/named.conf
+cd /etc/named
+dig -t NS .
+dig -t NS . > named.ca
+chown :named named.ca
+vi localhost.zone
+
+Client --> DNS Server：
+  local cache --> etc/hosts --> DNS Server（/etc/resolv.conf）
+  DNS Server：
+      1、如果查询请求是本机所负责的区域中的数据的话，要通过查询区域数据文件返回结果。
+      2、如果查询请求不是本机所负责的区域中的数据的话，就查询缓存，如果有则返回。
+      3、如果缓存中没有，则向根发送查询请求。
+
+
+FTP：File Transfer Protocol
+    21/tcp：
+    2
+文件共享服务：
+    应用层，ftp
+    NFS：Network File System（RPC：Remote Procedure Call，远程过程调用）
+    Samba：CIFS/SMB
+
+FTP：tcp，两个连接
+    命令连接，控制连接，一直在线：21/tcp
+    数据连接，按需要打开关闭：
+        主动模式：20/tcp
+	被动模式：端口随机
+
+    数据传输模式：应该自动选择
+        二进制
+	文本
+
+服务器端程序：
+    vsftpd：very secure ftp daemon
+    proftpd：
+    pureftpd：
+    filezilla：
+客户端程序：
+    CLI：
+        ftp
+	lftp
+    GUI：
+        gftpd
+	FlashFxp
+	cuteftp
+	filezilla
+
+vsftpd：
+    /etc/vsftpd：配置文件目录
+    /etc/init.d/vsftpd：服务脚本
+    /usr/sbin/vsftpd：主程序
+
+  基于PAM实现用户认证：
+    /etc/paw.d/*
+    /lib/security/*
+    /lib64/security/*
+    支持虚拟用户
+  vsftpd：
+    /var/ftp：根目录没有写的权限
+  上传和下载：
