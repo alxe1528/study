@@ -1,9 +1,161 @@
 Linux系统的启动流程：
-POST(CPU，Memory）-->BIOS-->Boot Sequence-->MBR-->Boot Loader（代码）-->Kernel（初始化）
+POST(CPU，Memory）-->BIOS-->Boot Sequence-->MBR-->Boot Loader（代码）-->Kernel（初始化）-->initrd（/boot/initrd*）-->/sbin/init（可以使用which init查找到，结合/etc/inittab完成初始化）
   BIOS：基本输入/输出系统Basic Input / Output System），保存数据至CMOS。
   CMOS：互补金属氧化物半导体（Complementary Metal-Oxide-Semiconductor Transistor），需要供电才能工作。
   MBR：主引导记录（Master Boot Record）
+  Boot Loader：
+    LILO：lInux LOader，常用于嵌入式平台体积小。
+    GRUB：GRand Unified Boot loader
+        加载分为两步：
+	    Stage1：MBR（446byte限制）
+	    Stage1.5
+	    Stage2：/boot/grub/
+	    config：/boot/grub/grub.conf
+	            /boot/grub/menu.lst（grub.conf的链接文件）
+		        default=0：0代表启动下面title所设置的内核或者系统
+			timeout=5：5秒提示时间
+			splashimage=(hd0,0)/grub/splash.xpm.gz：hd0代表第一块硬盘，0代表第一个分区，grub特有的识别分区机制。设置背景图片位置。
+			hiddenmenu：隐藏菜单，没有设置的话，启动时候会有启动菜单。隐藏了的话，可以按任意键弹出来。
+			password [--md5] pwd：如果设置了此项，则修改下面的信息需要验证此密码（密码可以是普通字符串，设置md5密码参考grub-md5-crypt命令）
+		        title [Description]：引导一个内核或者一个操作系统
+			    root (hd0,0)：内核所在的分区，hd0,0：代表第一个磁盘第一块分区。
+			    kernel /vmlinuz-[version] ro root=/dev/sda* rhgb quiet s：内核所在的路径（相对于root路径）
+			        ro：以只读方式进行挂载
+				rhgb：redhat特有的选项
+				quiet：挂载的时候不输出log信息出来
+				s：单用户维护模式，不需要输入账号和密码就可以登录系统，所以为了避免被他人恶意修改，设置全局password或者局部的password。
+			    initrd /initrd-[version].img：
+			    password [--md5] pwd：如果设置了此项，则启动此系统需要验证密码
 
+
+            grub-md5-crypt：输入此命令进行交互模式生成加密密码
+
+	    重装grub到一块新的硬盘：
+	    1、使用VM添加一块独立硬盘
+	    2、分区
+	        [root@localhost ~]# fdisk /dev/sdb #创建系统分区
+	        [root@localhost ~]# partprobe /dev/sdb
+	        [root@localhost ~]# mkdir /test
+	        [root@localhost ~]# mkdir /test/boot
+		[root@localhost ~]# mke2fs /dev/sdb1
+		[root@localhost ~]# ls /test/boot
+		grub  lost+found
+		[root@localhost ~]# ls /test/boot/grub/
+		[root@localhost ~]# cd /test/boot/
+		[rooocalhost boot]# cp /boot/vmlinuz-2.6.32-431.el6.i686 vmlinuz #复制并重命名文件，后面grub.conf配置文件里懒得写版本号了。
+		[root@localhost boot]# cp /boot/initrd-2.6.32-431.el6.i686kdump.img initrd.gz
+		[root@localhost boot]# ls
+		grub  initrd.gz  lost+found  vmlinuz
+		[root@localhost boot]# vim grub/grub.conf
+		[root@localhost boot]# sync #强制同步内存数据到硬盘中去
+		[root@localhost boot]# cat grub/grub.conf
+		default=0
+		timeout=10
+		title YaoYao's Linux Operation System
+		  root (hd0,0)
+		  kenrel /vmlinuz
+		  initrd /initrd.gz
+		
+		[root@localhost boot]# fdisk /dev/sdb #创建第二个主分区，用于挂载root
+		[root@localhost boot]# partprobe /dev/sdb
+		[root@localhost boot]# sync
+		[root@localhost ~]# ls /dev/sdb #如果没有出现sdb2，重启下系统再来看看。
+		sdb   sdb1  sdb2
+		[root@localhost ~]# mke2fs /dev/sdb2
+		[root@localhost /]# mount /dev/sdb2 /test/sysroot/
+		[root@localhost /]# cd /test/sysroot/
+		[root@localhost sysroot]# ls
+		lost+found
+		[root@localhost sysroot]# mkdir {etc,lib,bin,sbin,proc,dev,mnt,media,sys,srv,misc,usr/{local,bin,sbin,lib,share},var/{log,run,spool},boot,tmp,home,root} -p
+		[root@localhost sysroot]# ls
+		bin  boot  dev  etc  home  lib  lost+found  media  misc  mnt  proc  root  sbin  srv  sys  tmp  usr  var
+		[root@localhost sysroot]# cp /sbin/init /test/sysroot/sbin/
+		[root@localhost sysroot]# ldd /sbin/init
+			linux-gate.so.1 =>  (0x0041e000)
+			libnih.so.1 => /lib/libnih.so.1 (0x00ce2000)
+			libnih-dbus.so.1 => /lib/libnih-dbus.so.1 (0x00993000)
+			libdbus-1.so.3 => /lib/libdbus-1.so.3 (0x0079b000)
+			libpthread.so.0 => /lib/libpthread.so.0 (0x0056d000)
+			librt.so.1 => /lib/librt.so.1 (0x00b5d000)
+			libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x009b6000)
+			libc.so.6 => /lib/libc.so.6 (0x00da0000)
+			/lib/ld-linux.so.2 (0x0028b000)
+		[root@localhost sysroot]# cp /lib/libnih.so.1 lib
+		[root@localhost sysroot]# cp /lib/libnih-dbus.so.1 lib
+		[root@localhost sysroot]# cp /lib/libdbus-1.so.3 lib
+		[root@localhost sysroot]# cp /lib/libpthread.so.0 lib
+		[root@localhost sysroot]# cp /lib/librt.so.1 lib
+		[root@localhost sysroot]# cp /lib/libgcc_s.so.1 lib
+		[root@localhost sysroot]# cp /lib/libc.so.6 lib
+		[root@localhost sysroot]# ls lib
+		libc.so.6  libdbus-1.so.3  libgcc_s.so.1  libnih-dbus.so.1  libnih.so.1  libpthread.so.0  librt.so.1
+		[root@localhost sysroot]# cp /bin/bash bin
+		[root@localhost sysroot]# ldd /bin/bash
+			linux-gate.so.1 =>  (0x005fc000)
+			libtinfo.so.5 => /lib/libtinfo.so.5 (0x00101000)
+			libdl.so.2 => /lib/libdl.so.2 (0x00467000)
+			libc.so.6 => /lib/libc.so.6 (0x002b1000)
+			/lib/ld-linux.so.2 (0x0028b000)
+		[root@localhost sysroot]# cp /lib/libtinfo.so.5 lib
+		[root@localhost sysroot]# cp /lib/libdl.so.2 lib
+		[root@localhost sysroot]# cp /lib/ld-linux.so.2 lib
+		[root@localhost sysroot]# ls lib
+		ld-linux.so.2  libc.so.6  libdbus-1.so.3  libdl.so.2  libgcc_s.so.1  libnih-dbus.so.1  libnih.so.1  libpthread.so.0  librt.so.1  libtinfo.so.5
+		[root@localhost sysroot]# cd bin
+		[root@localhost bin]# ln -s bash sh #创建软链接
+		[root@localhost bin]# ll
+		total 868
+		-rwxr-xr-x. 1 root root 874472 Apr 10 08:05 bash
+		lrwxrwxrwx. 1 root root      4 Apr 10 08:08 sh -> bash
+		[root@localhost sysroot]# cd
+		[root@localhost ~]# /usr/sbin/chroot /test/sysroot/ #切换root，进入到交互模式，输入任何命令会执行不成功，输入exit退出，如下。
+		bash-4.1# ls
+		bash: ls: command not found
+		bash-4.1# exit
+		exit
+		[root@localhost ~]# vim /test/boot/grub/grub.conf #添加（ro root=/dev/sda2）信息
+		[root@localhost ~]# cat /test/boot/grub/grub.conf
+		default=0
+		timeout=10
+		title YaoYao's Linux Operation System
+		  root (hd0,0)
+		  kenrel /vmlinuz ro root=/dev/sda2
+		  initrd /initrd.gz
+
+	       
+  Kernel启动时完成的任务：
+    硬件探测
+    硬件驱动初始化（需要结合initrd：RAMDISK）
+    挂载根文件系统（根切换initrd-->rootfs）
+    启动init进程
+  init（结合/etc/inittab）：
+    设定默认运行级别
+    执行系统初始化脚本（/etc/rc.d/rc.sysinit）
+        系统初始化脚本完成的任务：
+	    激活udev和selinux
+	    根据/etc/sysctl.conf配置文件设置内核参数
+	    设定系统时钟
+	    设定键映射
+	    启动交换分区
+	    设置主机名称
+	    根文件系统检测，并以读写方式重新挂载
+	    激动RAID和LVM
+	    启动磁盘配额
+	    检查和挂载其它文件系统
+	    清理过期文件锁和PID文件等
+    运行某级别相应的脚本（/etc/rc.d/rcN.d）
+    启动虚拟终端
+    对于5级别而言，初始化图形界面
+
+Linux是单内核：
+  内核和模块(*.ko)
+  内核：/boot/vmlinuz-[version]
+  模块：/lib/modules/[version]/
+
+
+查看某程序依赖的库文件：
+ldd [option] file
+    [root@localhost myboot]# ldd /bin/bash
 
 
 type COMMAND：判断COMMAND是内部命令还是外部命令
