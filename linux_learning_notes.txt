@@ -59,6 +59,26 @@ POST(CPU，Memory）-->BIOS-->Boot Sequence-->MBR-->Boot Loader（代码）-->Ke
     启动虚拟终端
     对于5级别而言，初始化图形界面
 
+[root@localhost ~]# cat /etc/inittab
+# Default runlevel. The runlevels used by RHS are:
+#   0 - halt (Do NOT set initdefault to this) #关机模式
+#   1 - Single user mode #单用户模式，意味着不需要账户和密码进行登录。
+#   2 - Multiuser, without NFS (The same as 3, if you do not have networking) #正常模式，nfs服务是关闭的。
+#   3 - Full multiuser mode #多用户模式，文本命令界面，不启动用户界面
+#   4 - unused #保留，未使用
+#   5 - X11 #多用户模式，图形界面，不启动用户界面
+#   6 - reboot (Do NOT set initdefault to this) #重启模式
+# 
+id:5:initdefault: #默认运行模式，可以编辑此项进行切换模式，要重启后才能生效。
+[root@localhost ~]# runlevel #查看当前运行的模式
+N 5 #N：上一次启用的模式，如果为N则表示没有
+    #5代表本次运行的模式
+[root@localhost ~]# init 3 #立即进行运行模式的切换
+[root@localhost ~]# runlevel
+5 3
+[root@localhost ~]# who -r #也可以当前运行的模式
+         run-level 3  2014-04-11 19:10                   last=5
+
 
 查看某程序依赖的库文件：
 ldd [option] file
