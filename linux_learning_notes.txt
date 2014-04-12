@@ -79,6 +79,42 @@ N 5 #N：上一次启用的模式，如果为N则表示没有
 [root@localhost ~]# who -r #也可以当前运行的模式
          run-level 3  2014-04-11 19:10                   last=5
 
+伪文件系统/proc：
+    内核提供用户空间，查看内核运行特征的接口
+    /proc/syc：提供给管理员的通过改变某些参数的值以改变内核运行特性的接口
+    
+    一些命令：
+          vmstat
+	  free
+	  uptime
+	  pmap
+	  lsof
+	  uname
+	  ps
+	  top
+	  df
+	  fdisk
+     proc目录下一些文件介绍：
+         /proc/<PID>：那些数字目录，都是进程ID
+	 /proc/cpuinfo
+	 /proc/meminfo
+	 /proc/modules
+	 /proc/vmstat
+	 /proc/version
+	 /proc/loadavg
+
+	 /proc/sys：目录里的部分文件可以修改（查看文件拥有w权限的），并且立即生效
+	 /etc/sysctl.conf：等同于修改/proc/sys目录里文件的值，需要重启后才能生效。
+	     e.g.:
+	         [root@localhost proc]# cat /proc/sys/net/ipv4/icmp_echo_ignore_all
+                 0
+		 #可以在/etc/sysctl.conf中配置为.net.ipv4.icmp_echo_ignore_all = 0
+	 sysctl [option]
+	   -a：显示所有内核参数
+	   -w variable=value：设置某个参数的值，立即生效
+		[root@localhost proc]# sysctl -w net.ipv4.icmp_echo_ignore_all=0
+	   -p <filename>：重新读取配置，使其生效。
+
 
 查看某程序依赖的库文件：
 ldd [option] file
