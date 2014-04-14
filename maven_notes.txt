@@ -1,8 +1,8 @@
 Maven环境变量
 1、windows
-	MAVEN_HOME D:\AppServer\apache-maven\apache-maven-3.1.1
-	MAVEN %MAVEN_HOME%\bin
-	MAVEN_OPTS -Xms256m -Xmx512m
+MAVEN_HOME D:\AppServer\apache-maven\apache-maven-3.1.1
+MAVEN %MAVEN_HOME%\bin
+MAVEN_OPTS -Xms256m -Xmx512m
 
 groupId：定义当前项目隶属于某个组织
 artifactId：定义项目模块名
@@ -60,10 +60,10 @@ mvn clean deploy site-deploy：调用clean生命周期的pre-clean、clean阶段
 
 http://maven.apache.org/plugins/index.html
 Maven在核心为一些主要的生命周期阶段绑定了很多插件的目标，当用户通过命令行调用生命周期阶段的时候，对应的插件目标就会执行相应的任务。
-生命周期阶段	       插件目标                             
-clean			       maven-clean-plugin:clean             删除项目的输出目录
-site			       maven-site-plugin:site               用来生成项目站点
-site-deploy			   maven-site-plugin:deploy             用来将项目站点部署到远程服务器上
+生命周期阶段	       插件目标                             执行任务
+clean                  maven-clean-plugin:clean             删除项目的输出目录
+site                   maven-site-plugin:site               用来生成项目站点
+site-deploy            maven-site-plugin:deploy             用来将项目站点部署到远程服务器上
 process-resources      maven-resources-plugin:resources     复制主资源文件至主输出目录
 compile                maven-compiler-plugin:compile        编译主代码至主输出目录
 process-test-resources maven-resources-plugin:testResources 复制测试资源文件至测试输出目录
