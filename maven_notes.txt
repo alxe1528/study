@@ -199,3 +199,14 @@ repositories 项目的仓库位置
 build 包括项目的资源目录配置、输出目录配置、插件配置、插件管理配置等。
 	子节点pluginManagement元素中配置的依赖不会造成实际的插件调用行为，当子模块pom中配置了真正的plugin元素，并且其groupId和artifactId与pluginManagement中配置的插件匹配时，pluginManagement的配置才会影响实际的插件行为。
 reporting 包括项目的报告输出目录配置、报告插件配置等
+
+剪裁反应堆，mvn -h可以查看到这些选项   
+-am, --also-make 同时构建该模块的依赖模块（如果该模块依赖其它模块，就会先构建依赖的模块）
+-amd -also-make-dependents 同时构建依赖于该模块的模块（如果该模块被其它模块依赖，会一并将它的子模块构建）
+	mvn clean install -pl account-parent -amd -rf account-email   
+-pl, --projects <arg> 构建指定的模块，模块间用逗号分隔
+	mvn clean install -pl account-email,account-persist
+	study-parent>mvn clean install -pl ../study-web #注意要使用目录相对定位，否则会报错
+-rf -resume-from <arg> 从指定的模块回复反应堆
+	mvn clean install -rf account-email
+
