@@ -1,0 +1,29 @@
+git config [options]
+1) /etc/gitconfig 对所有用户都适用的配置，使用git cofing --system
+2) ~/.gitconfig 用户目录下的配置，使用git config --global
+3) .git/config 工作目录下的配置，使用git config --local
+配置生效优先级：3) > 2) > 1)
+
+git config -l
+git config --list
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com
+git config user.name 查看某个环境变量的设定
+git config --global alias.st status 设置别名
+git config --global core.autocrlf false 
+
+
+git remote add origin https://github.com/user/repo.git
+# Set a new remote
+
+git remote -v
+# Verify new remote
+# origin  https://github.com/user/repo.git (fetch)
+# origin  https://github.com/user/repo.git (push)
+
+git push -u progit master
+
+巧用git add
+假设已经开发好了某个功能，这时候用git add添加，但不commit。
+场景一：这时候我再去添加些测试代码测试，比如System.out.println这种代码，测试下来发现我刚才add的代码都是OK的，这时候我用git checkout直接就能删掉刚才添加的测试代码。
+场景二：我发现刚才add的代码不够完美，修改完成之后，再次用git add添加，就会把上一次add的代码合并了，然后做为一次commit。
