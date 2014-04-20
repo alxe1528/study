@@ -275,6 +275,9 @@ set output-meta on
 set convert-meta off
 02) ls命令显示中文，将alias命令添加到配置文件/etc/profile中
 alias ls='ls --show-control-chars --color=auto'
+3) 解决gitk和Git Gui乱码，在 "/etc/gitconfig" 中添加或修改以下配置
+[gui]
+    encoding = utf-8
 
 
 实战1：两个提交压缩为一个
