@@ -84,6 +84,7 @@ git diff <branch1> <branch2> 在两个分支之间比较，只比较已经提交
 git diff <branch2> [current-branch] 用当前分支比较另外一个分支，同样可以比较远程分支（ git diff pro/b1，注：先执行git fetch）
 git diff <任意有效可以进行比较的> 比较工作区和目标
 git diff --stat 比较之后，显示简要的增改行数统计
+git diff --binary 比较二进制文件差异
 git checkout [HEAD] 汇总显示工作区、暂存区与HEAD的差异
 
 
@@ -275,9 +276,11 @@ set output-meta on
 set convert-meta off
 02) ls命令显示中文，将alias命令添加到配置文件/etc/profile中
 alias ls='ls --show-control-chars --color=auto'
+alias gitk='gitk --all' #设置别名
 3) 解决gitk和Git Gui乱码，在 "/etc/gitconfig" 中添加或修改以下配置
 [gui]
     encoding = utf-8
+4) 在/etc/git-completion.bash末尾位置添加“cd /d”，可以让msysGit打开定位到D盘
 
 
 实战1：两个提交压缩为一个

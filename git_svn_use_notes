@@ -29,6 +29,8 @@ git svn info
 2）、Tracking and contributing to an entire Subversion-managed project (complete with a trunk, tags and branches):
 
 git svn clone https://localhost:8443/svn/test1 -s --prefix=mytest1/
+  --prefix 用于设置在.git/refs/remotes下保存引用时的的前缀
+  -s 即标准的版本库，trun/branches/tags会以git的分支展示（使用git checkout切换），而不是svn中看到的三个目录
 测试下来是不支持git svn fetch加版本号复制
 
 git config -l
