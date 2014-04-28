@@ -128,6 +128,188 @@ type COMMAND：判断COMMAND是内部命令还是外部命令
 pwd：显示当前目录
 Linux文件名称规范：除了换行符都可以，一般不建议使用空白，/，?，*。不靠扩展名区分文件类型，目录也是文件，目录不能跟文件同名
 
+软件包管理
+  软件包的组成：
+    二进制程序
+    配置文件
+      组成方式：
+        1) 单文件
+        2) 将主配置文件切割为多个小文件，并放置于某目录中
+           /etc/profile, /etc/profile.d/*
+           /etc/pam.conf, /etc/pam.d/*
+           /etc/yum.conf, /etc/yum.conf.d/*
+        3) 单文件，在内部分割为多个片断
+     库文件（二进制，可执行）：
+        1) 静态库
+        2) 动态库
+     帮助文件
+        1) 手册页
+        2) 文档(/usr/share/doc)
+
+应用程序存放位置：
+  二进制程序：
+    1) /bin, /sbin 一般是系统自身启动需要使用的程序
+    2) /usr/bin, /usr/sbin 一般是系统提供的基本功能的程序
+    3) /usr/local/bin, /usr/local/sbin 一般是第三方的程序
+  库文件：
+    1) /lib（配置文件：/etc/Id.so.conf）
+    2) /usr/lib（配置文件：/etc/Id.so.conf.d/*.conf）
+  配置文件：
+    1) /etc
+    2) /etc/httd
+  帮助文件：
+    1) /usr/share/man（配置文件：/etc/man.config）
+    2) /usr/share/doc
+
+RedHat Package Manager: RPM
+rpm格式的软件包如何命名：
+  name-version-release.arch.rpm
+    name: 软件名
+    version: 源程序的版本号，如：2.1.3
+      major 主版本号
+      minor 次版本号
+      release 修正号
+    release: rpm包软件制作者第几次更新的版本号
+    arch: 二进制程序格式，如：i386, x86_64, ...(noarch: 平台无关)
+
+一个软件包为了管理上的方便，在制作成rpm包的时候，可以分成多个功能相对独立的rpm包
+  name-version: 主包
+  name-subname-version: 子包
+    name-devel-version: 比较特殊的子包，跟开发有关，库文件，头文件
+
+为了解决软件包的依赖关系，需要自动判断依赖关系，又能自动解决依赖关系软件包管理工具：
+yum: yellowdog update modifier
+  repository 仓库，yum源
+    repodata: 只有包含此目录为其子目录的路径才可以用作yum源
+      repomd.xml
+      primary.xml.gz 当前yum仓库内每一个rpm包的名字及其彼此间的依赖关系，此外还包含每个rpm包能够安装生成的文件
+      filelists.xml.gz 所有rpm包包含的安装生成的文件的文件列表
+      outher.xml.gz 额外信息，主要包含的是rpm包的changelog
+  配置文件：
+    /etc/yum.conf
+    /etc/yum.repos.d/*.repo
+    /etc/yum/pluginconf.d/
+
+linux上软件包的安装途径
+1) rpm包
+  rpm命令
+    安装
+      rpm -i path/PACKAGE_FILE1 path/PACKAGE_FILE2 ... RPM包路径
+          -v 显示安装详细信息（最多支持3个v，如：-vvv）
+          -h 显示安装进度
+          --test 测试安装
+          --nodeps 忽略依赖关系，未必能安装上，安装上也未必能使用
+          --replacepkgs 替换性的安装，重装
+          --force 无视冲突
+    升级
+      rpm -U|-F path/PACKAGE_FILE1 path/PACKAGE_FILE2 ...
+          -U old-->new，无old，则安装new
+          -F old-->new，无old，则不new
+          --oldpackage 降级
+          -v 显示安装详细信息
+          -h 显示安装进度
+    卸载
+      rpm -e PACKAGE_NAME ...
+          --nodeps 忽略依赖关系卸载
+    查询
+      rpm -q PACKAGE_NAME1 PACKAGE_NAME2 ... 根据名字查询
+      rpm -qa 查询当前系统所有安装的软件包
+      rpm -qi PACKAGE_NAME 显示软件包详细信息
+      rpm -ql PACKAGE_NAME 用于列举出此rpm包安装完成之后在系统上生成了哪些文件
+      rpm -qf FILE 用于查询文件是由哪个rpm包安装生成的
+      rpm -qc PACKAGE_NAME 查询此rpm包生成的配置文件
+      rpm -qc PACKAGE_NAME 查询此rpm包生成的文档
+      rpm -q --scripts PACKAGE_NAME 查询此rpm包内置的脚本
+      rpm -p PACKAGE 查询未安装的rpm包，配合其它命令一起使用
+      rpm包：单向加密
+      单向加密：提取数据特征码
+        1) 如果数据一样，结果一定会一样
+        2) 雪崩效应，原数据有一点点不同，结果大不同
+      rpm包签名：提取特征码，附加在软件包上，使用自己的私钥加密此特征码
+      rpm包验证签名：
+        1) 用官方的公钥解密这段加密的特征码，得到可靠的官方提供的特征码
+        2) 自己再使用同样的方法提取特征码，并比较和解密出来的特征码是否一致
+    校验：检查某rpm包安装生成的文件有没有被改变过
+      rpm -V PACKAGE_NAME
+    检验签名，安装前使用
+      rpm --import FILE 导入密钥文件（/etc/pki/rpm-gpg/，或者在光盘上）
+      rpm -K PACKAGE
+          --nodigest 不校验单向的相关内容，指sha1, md5信息
+          --nosignature 不校验签名，指gpg, dsa信息
+    rpm包的数据库(/var/lib/rpm)
+      rpm --initdb 重新初始化丢失了的库
+          --rebuilddb 重建，无论实现是否存在
+  yum命令
+    yum list all 显示所有的
+    yum list installed 显示已经安装的
+    yum list available 显示可以安装但尚未安装的
+    yum list updates 显示可以更新的
+    yum repolist 显示配置的仓库集合
+    yum clean [all | packages | metadata] 清除缓存信息
+    yum grouplist 显示组信息
+    yum groupinfo GROUP_NAME 显示组里面包含的rpm包信息
+    yum info PACKAGE_NAME 显示一个rpm包信息
+    yum serarch KEYWORD 搜索rpm包信息，模糊查询
+    yum whatprovides | provides FILE 查看文件是由哪个rpm包安装的
+    yum install PACKAGE_NAME 安装rpm包
+    yum remove PACKAGE_NAME 卸载rpm包
+    yum update PACKAGE_NAME 更新rpm包
+    yum groupinstall GROUP_NAME 安装一个组的rpm包
+    yum groupremove GROUP_NAME 卸载一个组的rpm包
+    yum reinstall PACKAGE_NAME 重新安装rpm包
+    yum check-update 检查有哪些可以更新的rpm包
+    yum localinstall 安装本地的rpm包，如果有依赖会去仓库里下载
+
+    yum的选项
+      -y 自动回答为yes
+      --nogpgcheck 不要检查签名信息
+2) 源码包
+  编译安装
+3) 编译好的二进制压缩包，解压后配置使用
+  MySQL/MongoDB ...
+
+压缩/解压缩
+zip
+  zip FILENAME.zip file1 file2 dir ... 需要指定压缩后的文件名(FILENAME.zip)，支持多个文件和目录，不会删除原文件
+  unzip
+    -d SAVE_PATH 指定解压后文件存放的位置
+gzip 压缩后的文件：*.gz，不支持将目录压缩成一个文件，不具备归档的功能
+  gzip FILE 压缩文件，生成FILE.gz，默认会删除原文件
+    -# 指定压缩比，范围1~9，默认是6
+    -d 解压缩文件，相当于gunzip FILE
+  gunzip 解压缩文件，会删除FILE.gz文件
+  zcat 不用解压，就能查看压缩后的文本文件的内容
+bzip2 比gzip有着更大压缩比的工具，压缩后的文件：*.bz2，不支持将目录压缩成一个文件，不具备归档的功能
+  bzip2 FILE 压缩文件，生成FILE.bz2，默认会删除原文件
+    -# 指定压缩比，范围1~9，默认是6
+    -d 解压缩文件，相当于bunzip2 FILE
+    -k 保留原文件
+  bunzip2 解压缩文件，会删除FILE.gz文件
+  bzcat 不用解压，就能查看压缩后的文本文件的内容
+xz
+tar 只能归档，不能压缩
+  tar [options] FILENAME.tar file1 file2 dir ...
+    [-]c 创建归档文件
+    [-]f FILENAME.tar 指定归档文件名
+    [-]x FILENAME.tar 提取归档文件
+    [-]v 显示操作过程详细信息
+    [-]t 直接查看归档文件的文件列表
+    --directory=DIR 指定提取归档文件存放的位置，目录需要已经存在
+    -z gzip进行压缩/解压缩（可以不用指定-j）归档文件
+    -j bzip2进行压缩/解压缩（可以不用指定-j）归档文件
+  Examples:
+    tar -cf archive.tar foo bar  # Create archive.tar from files foo and bar.
+    tar -tvf archive.tar         # List all files in archive.tar verbosely.
+    tar -xf archive.tar          # Extract all files from archive.tar.
+    tar -zcf archive.tar.gz foo bar
+    tar -jcf archive.tar.bz2 foo bar
+cpio
+
+设置库文件路径
+  /etc/ld.so.conf
+  1、新建文件/etc/ld.so.conf/*.conf，并将库文件所在的目录添加至此新建的文件
+  2、运行命令ldconfig [-v]
+
 COMMAND [options] [arguments]
 选项：用于调整命令执行行为的开关
   短选项：-h,-l，多个选项之间用空格隔开
@@ -188,9 +370,9 @@ date：查看系统时间
 2）、hwlock查看主板时间
 3）、cal
 
-halt
-reboot
-shutdown
+halt 系统休眠
+reboot 系统重启
+shutdown 系统关机
 
 windows下有很多文件、文件夹的名字中间有空格，如何在shell下实现呢？
 有几种方法，常用的：(My document)
