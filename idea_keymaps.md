@@ -9,6 +9,7 @@
 * [Refactoring](#refactoring)
 * [Live Templates](#live-templates)
 * [General](#general)
+* [Reference](#reference)
 
 ## Editing
 
@@ -430,3 +431,11 @@
 - `Ctrl + Tab`
   - Switch between tabs and tool window
   - 标签和工具窗口之间切换，选择完成之前需要先按住`Ctrl`键不放，`Up/Down/[0-9]/[a-z]`选择相应的编号
+
+## Reference
+
+[[Back To Top]](#jump-to-section)
+
+> Win Keymap [Win Keymap](http://www.jetbrains.com/idea/docs/IntelliJIDEA_ReferenceCard.pdf)
+
+> Mac OS Keymap [Mac OS Keymap](http://www.jetbrains.com/idea/docs/IntelliJIDEA_ReferenceCard_Mac.pdf)
