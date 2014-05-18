@@ -7,7 +7,7 @@
 * [Debugging](#debugging)
 * [Navigation](#navigation)
 * [Refactoring](#refactoring)
-* [Live Templates](#)
+* [Live Templates](#live-templates)
 * [General](#general)
 
 ## Editing
