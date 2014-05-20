@@ -27,7 +27,7 @@
 - `Ctrl + P`
   - Parameter info (within method call arguments)
   - 显示方法的参数
-- `Ctrl + Q`
+- `Ctrl + Q` **替换为：**`Alt + Q`
   - Quick documentation lookup
   - 显示注释文档
 - `Shift + F1`
@@ -63,7 +63,7 @@
 - `Ctrl + Shift + W`
   - Decrease current selection to previous state
   - Ctrl + W的相反操作，减少选择的代码块（连续操作）
-- `Alt + Q`
+- `Alt + Q` **替换为：**`Ctrl + Alt + Q`
   - Context info
   - 显示上下文信息，如方法/类声明，光标和声明处必须不在同一屏幕处，否则不会提示
 - `Alt + Enter`
@@ -95,7 +95,10 @@
   - 弹出窗口列举出最近使用的剪贴板内容，选择性插入
 - `Ctrl + D`
   - Duplicate current line or selected block
-  - 复制当前行或者选择的代码块到下一行
+  - 复制当前行到下一行（未选择行时）；复制选择的代码块到选择的末尾位置
+- `Alt + D`
+  - Duplicate lines
+  - 复制当前行或者选择的行到下一行
 - `Ctrl + Y`
   - Delete line at caret
   - 删除当前行或者选择的行
@@ -239,6 +242,9 @@
 - `Ctrl + Shift + F8`
   - View breakpoints
   - 查看所有断点信息
+- `Ctrl + Alt + R`
+  - Reload Changed Classes
+  - 重新加载更改过代码的class（用于调试时，更改代码后不重启环境生效，不一定会起作用，如：涉及静态的）
 
 ## Navigation
 
@@ -253,9 +259,9 @@
 - `Ctrl + Alt + Shift + N`
   - Go to symbol
   - 查找方法
-- `Alt + Right/Left`
+- `Alt + Right/Left` **替换为：**`Ctrl + Alt + Left/Right`
   - Go to next/previous editor tab
-  - 切换到下一个/上一个编辑窗口
+  - 切换到右边/左边的编辑窗口
 - `F12`
   - Go back to previous tool window
   - 切换到最近使用的工具栏窗口
@@ -274,10 +280,10 @@
 - `Ctrl + E`
   - Recent files popup
   - 弹出窗口列举出最近使用的文件
-- `Ctrl + Alt + Left/Right`
+- `Ctrl + Alt + Left/Right` **替换为：**`Alt + Right/Left`
   - Navigate back/forward
   - 导航向前/后退
-- `Ctrl + Shift + Backspace`
+- `Ctrl + Shift + Backspace` **替换为：**`Ctrl + Q`
   - Navigate to last edit location
   - 导航到最近编辑的位置（可以连续操作）
 - `Alt + F1`
@@ -351,7 +357,7 @@
 - `Alt + Delete`
   - Safe Delete
   - 安全方式删除
-- `Shift + F6` **替换为：**`Shift + R`
+- `Shift + F6` **替换为：**`Ctrl + Shift + R`
   - Rename
   - 重命名方法/类/文件
 - `Ctrl + F6` `快捷键已取消`
