@@ -56,10 +56,11 @@ git remote rename <old> <new> 修改某个远程仓库的简短名称
 git remote rm | remove <shortname> 移除某个远程仓库配置信息，只是本地移除
 git fetch [shortname] [branch-name] 从远程仓库抓取数据，只是将远端的数据拉到本地仓库，并不自动合并到当前工作分支
 git pull [shortname] [branch-name] 自动抓取数据下来，然后将远端分支自动合并到本地仓库中当前分支
+git pull [shortname] --tags 自动抓取远程仓库上所有的分支
 git push [shortname] [branch-name] 将本地仓库中的数据推送到远程仓库某个分支上
 git push [shortname] [tagname] 默认情况下，push并不会把标签传送到远端服务器上，只有通过显式命令才能推送标签到远端仓库。
+git push [shortname] --tags 推送所有的分支到远端服务器上（注意是否有权限）
 git push [远程名] [本地分支]:[远程分支] 如果省略[本地分支]，那就等于是在说：在这里提取空白然后把它变成[远程分支]，即删除掉[远程分支]了，[本地分支]不会删除
-
 
 巧用git add
 假设已经开发好了某个功能，这时候用git add添加，但不commit。
@@ -221,6 +222,8 @@ git branch 显示所有分支名称
 git branch -v 显示所有分支最后提交信息
 git branch <new_branch> 创建新分支，但不会自动切换到这个分支上
 git branch <new_branch> <commit> 基于提交创建新分支
+git checkout tag_name 基于标签创建新分支，HEAD会进入到游离指针状态
+git checkout -b <new_branch> tag_name 基于标签创建新分支，并自动切换到这个分支上
 git checkout -b <new_branch> 创建新分支，并自动切换到这个分支上
 git checkout -b [new_branch] [remote-shortname]/[branch] 创建新分支来跟踪远程分支，并自动切换到这个分支上
 git branch -m <old_branch> <new_branch> 重命名分支，如果存在<new_branch>，拒绝执行重命名
