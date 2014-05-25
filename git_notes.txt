@@ -30,6 +30,14 @@ git config --global core.whitespace trailing-space,space-before-tab,indent-with-
  2) 默认被关闭的2个选项是indent-with-non-tab和cr-at-eol，indent-with-non-tab会查找8个以上空格（非制表符）开头的行，cr-at-eol让Git 知道行尾回车符是合法的。
 git config --global diff.word.textconv strings 在比较前把Word文件转换成文本文件
 git config user.name 查看某个环境变量的设定
+git config --global http.proxy http://130.147.222.32:808 设置http代理，适用于http_proxy, https_proxy
+ 1) 或者直接在命令行中设置
+    export HTTPS_PROXY=http://130.147.222.32:808
+ 2) 或者在~/.bashrc中设置
+    export http_proxy=http://130.147.222.32:808
+    export https_proxy=http://130.147.222.32:808
+    export ftp_proxy=http://130.147.222.32:808
+    export no_proxy='.example.com'
 
 
 克隆
