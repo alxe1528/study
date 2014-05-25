@@ -279,7 +279,7 @@
   - 定位到指定行号
 - `Ctrl + E`
   - Recent files popup
-  - 弹出窗口列举出最近使用的文件
+  - 弹出窗口列举出最近访问的文件
 - `Ctrl + Alt + Left/Right` **替换为：**`Alt + Right/Left`
   - Navigate back/forward
   - 导航向前/后退
