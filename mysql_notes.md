@@ -726,11 +726,34 @@ index_list:
   - 查询缓存：show global variables like 'query_cache%';
 
    <pre>
+    query_cache_type 查询缓存是否被激活，取值有OFF,ON,DEMAND
     query_cache_size 用于缓存的内存空间大小，以字节为单位，必须是1024的倍数
     query_cache_min_res_unit 分配缓存块的最小值
     query_cache_limit 存储缓存内容的最大结果
     query_cache_wlock_invalidate 是否缓存其它联结已经锁定的表
    </pre>
+
+  - 减少碎片
+
+   <pre>
+    计算公式：(query_cache_size-Qcache_free_memory)/Qcache_queries_in_cache
+    flush query cache; #消除碎片
+    reset query cache; #清空缓存
+   </pre>
+
+  - 显示不使用缓存 `select sql_no_cache * from user;`
+  - 分析查询慢的select语句
+
+   <pre>
+    mysql> show global variables like '%slow%';
+    log_slow_queries ON|OFF
+    slow_launch_time
+    slow_query_log ON|OFF
+    slow_query_log_file
+    mysql> show global variables like 'long_query_time';
+    long_query_time
+   </pre>
+
 
 - 缓存工作统计数据查看：status variables
 
