@@ -98,6 +98,26 @@ git diff --binary 比较二进制文件差异
 git checkout [HEAD] 汇总显示工作区、暂存区与HEAD的差异
 
 
+暂存
+git stash 保存当前的工作进度，会分别对暂存区和工作区的状态进行保存
+git stash list 显示所有stash
+git show <stash@{n}> 查看某次暂存修改的内容
+git stash pop [--index] [<stash@{n}>]
+ 1) 如果不使用任何参数，会恢复最新保存的工作进度，并将恢复的工作进度从存储的工作进度列表中清除
+ 2) 如果使用stash参数，则从该stash中恢复，恢复完毕也将从进度列表中删除该stash
+ 3) --index除了恢复工作区的文件外，还尝试恢复暂存区。
+git stash apply [<stash@{n}>] [--index] 恢复暂存的内容，不会删除暂存。
+  --index用于恢复被add过的变更，这样能恢复到暂存区状态。没有指定第几个暂存时，则使用最近的一次暂存。
+git stash [save [--patch] [-k|--[no-]keep-index] [-q|--quiet] [<message>]
+ 1) 这条命令是git stash命令的完成版。如果需要在保存暂存的时候指定说明，使用格式：git stash save "Message"
+ 2) 使用参数--patch会显示工作区和HEAD的差异，通过对比差异文件的编辑决定在进度中最终要保存的工作的内容，通过编辑差异文件可以在进度中排除无关内容
+ 3) 使用-k或--keep-index参数，在保存进度后不将暂存区重置（默认会将暂存区和工作区强制重置）
+git stash drop [<stash@{n}>] 删除暂存，没有指定第几个暂存时，默认会删除最近的一次暂存
+git stash clear 删除所有的暂存
+git stash branch <branch> [<stash@{n}>] 这会创建一个新的分支，并切换到新分支，检出你储藏工作时的所处的提交，重新应用你的工作，如果commit成功，将会删除暂存
+git reflog show refs/stash
+
+
 撤销操作
 git commit --amend 修改最后一次提交，退出编辑器之后会直接commit。如果要取消，则在编辑器里清空掉提交信息再退出即可。使用场景如：修改提交信息、补正刚才修改的内容（需要先add）、少添加文件了（需要先add），谨慎操作！！
 git checkout [--] <file> 用暂存区中的文件覆盖工作区中的文件，相当于取消自上次执行add以来的本地修改
@@ -153,6 +173,54 @@ git rebase -i <commit> 执行交互式变基操作，会将<since>..<till>的提
 git rebase origin/master 在执行git fetch命令后使用，如果工作区有未提交的更改，变基动作不会执行
 
 
+分支
+git branch 显示所有分支名称
+git branch -v 显示所有分支最后提交信息
+git branch <new_branch> 创建新分支，但不会自动切换到这个分支上
+git branch <new_branch> <commit> 基于提交创建新分支
+git checkout tag_name 基于标签创建新分支，HEAD会进入到游离指针状态
+git checkout -b <new_branch> tag_name 基于标签创建新分支，并自动切换到这个分支上
+git checkout -b <new_branch> 创建新分支，并自动切换到这个分支上
+git checkout -b [new_branch] [remote-shortname]/[branch] 创建新分支来跟踪远程分支，并自动切换到这个分支上
+git branch -m <old_branch> <new_branch> 重命名分支，如果存在<new_branch>，拒绝执行重命名
+git branch -M <old_branch> <new_branch> 重命名分支，如果存在<new_branch>，强制执行重命名
+git branch -d <branch> 删除某个分支
+git branch -D <branch> 强制删除某个分支，未被合并的分支被删除的时候需要强制
+git branch --merged 查看已经被合并到当前分支的分支
+git branch --no-merged 查看尚未被合并到当前分支的分支
+
+合并：有未提交修改情况下，不要执行merge！遵守这条警告，防患于未然
+git merge [options] <commit>...
+ 1) 合并操作的大多数情况，只须提供一个<commit>（提交ID或对应的引用：分支、里程碑等）作为参数。合并操作将<commit>对应的目录树和当前工作分支的目录树的内容进行合并，合并后的提交以当前分支的提交作为第一个父提交，以<commit>为第二个父提交。合并操作还支持将多个<commit>代表的分支和当前分支进行合并，过程类似
+ 2) 默认合并后的结果会自动提交，但是如果提供--no-commit选项，则合并后的结果会放入暂存区，用户可以对合并结果进行检查、更改，然后手动提交
+git merge <branch> 将branch分支合并到当前分支
+git merge origin/master --no-ff 不要Fast-Foward合并，会自动生成merge提交信息
+git merge origin/master --no-ff -m"<Message>" 不要Fast-Foward合并，手动生成merge提交信息
+git merge --abort 冲突时执行中止merge操作，merge manual中说，这条命令会尽力恢复到Merge之前的状态（可能失败！）。
+
+
+标签
+git tag 列出现有的标签
+git tag -l 'v1.4.2.*' 标签匹配查询
+git tag -d v1.0 删除某个标签
+git show v1.0 查看相应标签的版本信息，并连同显示打标签时的提交对象
+1）轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。如果只是临时性加注标签，或者不需要旁注额外信息，用轻量级标签也没问题。
+  git tag v1.2 要创建这样的标签，一个-a，-s 或-m选项都不用，直接给出标签名字即可
+2）含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用GNU Privacy Guard (GPG) 来签署或验证。一般我们都建议使用含附注型的标签，以便保留相关信息。
+  git tag -a v1.0 -m 'my version 1.0' -m选项则指定了对应的标签说明，如果在此选项后没有给出具体的说明内容，Git会启动文本编辑器供你输入。
+  git tag -s v1.1 -m 'my signed 1.1 tag' 如果有自己的私钥，还可以用GPG来签署标签，只需要把之前的-a改为-s
+  git tag -v [tag-name] 验证已经签署的标签。此命令会调用GPG 来验证签名，所以你需要有签署者的公钥，存放在keyring 中，才能验证
+
+
+文件追溯
+git blame <file> 会逐行显示文件，在每一行的行首显示此行最早是在什么版本引入的，由谁引入的
+git blame -L <n,m> <file> 查看某几行
+
+git ls-files 显示暂存区和版本库中的文件
+git ls-files --with-tree=HEAD^ 查看历史版本的文件列表
+git cat-file -p HEAD^:<file> 查看历史版本中文件是否存在
+
+
 删除
 git rm --cached <file> 从暂存区删除文件，工作区不会删除
 git clean [options] 移除掉未被跟踪的文件和目录
@@ -161,30 +229,6 @@ git clean [options] 移除掉未被跟踪的文件和目录
 
 重命名
 git mv <old_file_name> <new_file_name> 重命名文件，并且会添加到暂存区
-
-
-暂存
-git stash 保存当前的工作进度，会分别对暂存区和工作区的状态进行保存
-git stash list 显示所有stash
-git show <stash@{n}> 查看某次暂存修改的内容
-git stash pop [--index] [<stash@{n}>]
- 1) 如果不使用任何参数，会恢复最新保存的工作进度，并将恢复的工作进度从存储的工作进度列表中清除
- 2) 如果使用stash参数，则从该stash中恢复，恢复完毕也将从进度列表中删除该stash
- 3) --index除了恢复工作区的文件外，还尝试恢复暂存区。
-git stash apply [<stash@{n}>] [--index] 恢复暂存的内容，不会删除暂存。
-  --index用于恢复被add过的变更，这样能恢复到暂存区状态。没有指定第几个暂存时，则使用最近的一次暂存。
-git stash [save [--patch] [-k|--[no-]keep-index] [-q|--quiet] [<message>]
- 1) 这条命令是git stash命令的完成版。如果需要在保存暂存的时候指定说明，使用格式：git stash save "Message"
- 2) 使用参数--patch会显示工作区和HEAD的差异，通过对比差异文件的编辑决定在进度中最终要保存的工作的内容，通过编辑差异文件可以在进度中排除无关内容
- 3) 使用-k或--keep-index参数，在保存进度后不将暂存区重置（默认会将暂存区和工作区强制重置）
-git stash drop [<stash@{n}>] 删除暂存，没有指定第几个暂存时，默认会删除最近的一次暂存
-git stash clear 删除所有的暂存
-git stash branch <branch> [<stash@{n}>] 这会创建一个新的分支，并切换到新分支，检出你储藏工作时的所处的提交，重新应用你的工作，如果commit成功，将会删除暂存
-git reflog show refs/stash
-
-git ls-files 显示暂存区和版本库中的文件
-git ls-files --with-tree=HEAD^ 查看历史版本的文件列表
-git cat-file -p HEAD^:<file> 查看历史版本中文件是否存在
 
 
 查看提交历史
@@ -228,50 +272,6 @@ git log --pretty="%h:%s" --author=gitster --since="2008-10-01" --before="2008-11
 --author 仅显示指定作者相关的提交。
 --committer 仅显示指定提交者相关的提交。
 git log --oneline --decorate 显示tag信息
-
-
-分支
-git branch 显示所有分支名称
-git branch -v 显示所有分支最后提交信息
-git branch <new_branch> 创建新分支，但不会自动切换到这个分支上
-git branch <new_branch> <commit> 基于提交创建新分支
-git checkout tag_name 基于标签创建新分支，HEAD会进入到游离指针状态
-git checkout -b <new_branch> tag_name 基于标签创建新分支，并自动切换到这个分支上
-git checkout -b <new_branch> 创建新分支，并自动切换到这个分支上
-git checkout -b [new_branch] [remote-shortname]/[branch] 创建新分支来跟踪远程分支，并自动切换到这个分支上
-git branch -m <old_branch> <new_branch> 重命名分支，如果存在<new_branch>，拒绝执行重命名
-git branch -M <old_branch> <new_branch> 重命名分支，如果存在<new_branch>，强制执行重命名
-git branch -d <branch> 删除某个分支
-git branch -D <branch> 强制删除某个分支，未被合并的分支被删除的时候需要强制
-git branch --merged 查看已经被合并到当前分支的分支
-git branch --no-merged 查看尚未被合并到当前分支的分支
-
-合并：有未提交修改情况下，不要执行merge！遵守这条警告，防患于未然
-git merge [options] <commit>...
- 1) 合并操作的大多数情况，只须提供一个<commit>（提交ID或对应的引用：分支、里程碑等）作为参数。合并操作将<commit>对应的目录树和当前工作分支的目录树的内容进行合并，合并后的提交以当前分支的提交作为第一个父提交，以<commit>为第二个父提交。合并操作还支持将多个<commit>代表的分支和当前分支进行合并，过程类似
- 2) 默认合并后的结果会自动提交，但是如果提供--no-commit选项，则合并后的结果会放入暂存区，用户可以对合并结果进行检查、更改，然后手动提交
-git merge <branch> 将branch分支合并到当前分支
-git merge origin/master --no-ff 不要Fast-Foward合并，会自动生成merge提交信息
-git merge origin/master --no-ff -m"<Message>" 不要Fast-Foward合并，手动生成merge提交信息
-git merge --abort 冲突时执行中止merge操作，merge manual中说，这条命令会尽力恢复到Merge之前的状态（可能失败！）。
-
-
-标签
-git tag 列出现有的标签
-git tag -l 'v1.4.2.*' 标签匹配查询
-git tag -d v1.0 删除某个标签
-git show v1.0 查看相应标签的版本信息，并连同显示打标签时的提交对象
-1）轻量级标签就像是个不会变化的分支，实际上它就是个指向特定提交对象的引用。如果只是临时性加注标签，或者不需要旁注额外信息，用轻量级标签也没问题。
-  git tag v1.2 要创建这样的标签，一个-a，-s 或-m选项都不用，直接给出标签名字即可
-2）含附注标签，实际上是存储在仓库中的一个独立对象，它有自身的校验和信息，包含着标签的名字，电子邮件地址和日期，以及标签说明，标签本身也允许使用GNU Privacy Guard (GPG) 来签署或验证。一般我们都建议使用含附注型的标签，以便保留相关信息。
-  git tag -a v1.0 -m 'my version 1.0' -m选项则指定了对应的标签说明，如果在此选项后没有给出具体的说明内容，Git会启动文本编辑器供你输入。
-  git tag -s v1.1 -m 'my signed 1.1 tag' 如果有自己的私钥，还可以用GPG来签署标签，只需要把之前的-a改为-s
-  git tag -v [tag-name] 验证已经签署的标签。此命令会调用GPG 来验证签名，所以你需要有签署者的公钥，存放在keyring 中，才能验证
-
-
-文件追溯
-git blame <file> 会逐行显示文件，在每一行的行首显示此行最早是在什么版本引入的，由谁引入的
-git blame -L <n,m> <file> 查看某几行  
 
 
 忽略文件
