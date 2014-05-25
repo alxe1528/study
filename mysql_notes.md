@@ -27,14 +27,14 @@ sql_mode=STRICT_ALL_TABLES
 
 **插件式存储引擎(表类型，表级别)**
 
-  - MyISAM
+  - MyISAM 支持表级别锁机制，不支持事务，不支持外键，不支持在线非阻塞备份
+  - InnoDB 支持行级别锁机制，支持事务，支持外键，支持在线非阻塞备份
+    <pre>
+    innodb_file_per_table=ON 配置参数，每张表使用单独的表空间文件
+    </pre>
   - CSV
   - MEMORY
   - MyISAMMRG
-  - InnoDB
-    <pre>
-    innodb_file_per_table=ON 每张表使用单独的表空间文件
-    </pre>
   - Federated
   - Archive
   - Blcakhole
