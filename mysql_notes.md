@@ -106,6 +106,55 @@ sql_mode=STRICT_ALL_TABLES
     show table status like'%TABLE_NAME%' [\G]; 在当前数据库中搜索某个表的信息
     show indexes from TABLE_NAME; 显示表中的索引信息
   </pre>
+  <pre>
+    mysql> help show
+    Name: 'SHOW'
+    Description:
+    SHOW has many forms that provide information about databases, tables,
+    columns, or status information about the server. This section describes
+    those following:
+    
+    SHOW CHARACTER SET [like_or_where]
+    SHOW COLLATION [like_or_where]
+    SHOW [FULL] COLUMNS FROM tbl_name [FROM db_name] [like_or_where]
+    SHOW CREATE DATABASE db_name
+    SHOW CREATE FUNCTION func_name
+    SHOW CREATE PROCEDURE proc_name
+    SHOW CREATE TABLE tbl_name #显示create table ddl script
+    SHOW DATABASES [like_or_where]
+    SHOW ENGINE engine_name {LOGS | STATUS }
+    SHOW [STORAGE] ENGINES
+    SHOW ERRORS [LIMIT [offset,] row_count]
+    SHOW FUNCTION CODE func_name
+    SHOW FUNCTION STATUS [like_or_where]
+    SHOW GRANTS FOR user
+    SHOW INDEX FROM tbl_name [FROM db_name]
+    SHOW INNODB STATUS
+    SHOW PROCEDURE CODE proc_name
+    SHOW PROCEDURE STATUS [like_or_where]
+    SHOW [BDB] LOGS
+    SHOW MUTEX STATUS
+    SHOW OPEN TABLES [FROM db_name] [like_or_where]
+    SHOW PRIVILEGES
+    SHOW [FULL] PROCESSLIST
+    SHOW PROFILE [types] [FOR QUERY n] [OFFSET n] [LIMIT n]
+    SHOW PROFILES
+    SHOW [GLOBAL | SESSION] STATUS [like_or_where]
+    SHOW TABLE STATUS [FROM db_name] [like_or_where]
+    SHOW TABLES [FROM db_name] [like_or_where]
+    SHOW TRIGGERS [FROM db_name] [like_or_where]
+    SHOW [GLOBAL | SESSION] VARIABLES [like_or_where]
+    SHOW WARNINGS [LIMIT [offset,] row_count]
+    
+    like_or_where:
+        LIKE 'pattern'
+      | WHERE expr
+    
+    If the syntax for a given SHOW statement includes a LIKE 'pattern'
+    part, 'pattern' is a string that can contain the SQL "%" and "_"
+    wildcard characters. The pattern is useful for restricting statement
+    output to matching values.
+  </pre>
 
 **mysqladmin命令，shell命令**
 <pre>
