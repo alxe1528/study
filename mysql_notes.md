@@ -518,6 +518,29 @@ mysqladmin -u<USER> -h<HOST_NAME> password <'PASSWORD'> [-p]
   - **tablespace**
   - **trigger**
   - **view**
+    - **创建视图**
+
+    <pre>
+    CREATE
+        [OR REPLACE]
+        [ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}]
+        [DEFINER = { user | CURRENT_USER }]
+        [SQL SECURITY { DEFINER | INVOKER }]
+        VIEW view_name [(column_list)]
+        AS select_statement
+        [WITH [CASCADED | LOCAL] CHECK OPTION]
+
+    </pre>
+
+    - **删除视图**
+
+    <pre>
+    DROP VIEW [IF EXISTS]
+        view_name [, view_name] ...
+        [RESTRICT | CASCADE]
+
+    </pre>
+
   - **envent**
   - **function**
   - **index**
