@@ -158,6 +158,9 @@ git clean [options] 移除掉未被跟踪的文件和目录
   -nd 显示将要被删除的目录和文件
   -fd 真正开始强制删除多余的目录和文件
 
+重命名
+git mv <old_file_name> <new_file_name> 重命名文件，并且会添加到暂存区
+
 
 暂存
 git stash 保存当前的工作进度，会分别对暂存区和工作区的状态进行保存
