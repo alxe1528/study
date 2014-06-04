@@ -1,13 +1,21 @@
 ## Jump to Section
 
+* [Python注意点](#python%E6%B3%A8%E6%84%8F%E7%82%B9)
 * [Python文件类型](#python%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B)
 * [Python变量](#python%E5%8F%98%E9%87%8F)
 * [Python运算符](#python%E8%BF%90%E7%AE%97%E7%AC%A6)
 * [Python数据类型](#python%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B)
 * [Python序列](#python%E5%BA%8F%E5%88%97)
+* [Python流程控制](#python%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6)
 * []()
 * []()
-* []()
+
+## Python注意点
+
+[[Back To Top]](#jump-to-section)
+
+- `Python`中，表示方法比较特殊，是用相同缩进的一条或多条语句来表示的，建议使用4个空格作为缩进
+
 
 ## Python文件类型
 
@@ -302,7 +310,7 @@
   >>> str[3::-1]
   '4321'
   ```
-- 元组（类似于java中的数组）：`tuple`
+- 元组（类似于`Java`中的数组）：`tuple`
   - 一旦生成，不可以改变
   - 固定长度，支持嵌套
   - 通过偏移读取
@@ -334,6 +342,93 @@
   ('x', 'y', 'z')
   >>> c3
   1
+  ```
+- 字典：`dict`
+  - [jump to api doc](https://docs.python.org/2/library/stdtypes.html#mapping-types-dict)
+  - 字典是`Python`中唯一的映射类型（哈希表）
+  - 字典对象是可变的，但字典的键必须使用不可变对象，并且一个字典中可以使用不同类型的键值
+  - 定义字典的几种方式
+  ```python
+  >>> a = dict(one=1, two=2, three=3)
+  >>> b = {'one': 1, 'two': 2, 'three': 3}
+  >>> c = dict(zip(['one', 'two', 'three'], [1, 2, 3]))
+  >>> d = dict([('two', 2), ('one', 1), ('three', 3)])
+  >>> e = dict({'three': 3, 'one': 1, 'two': 2})
+  >>> a == b == c == d == e
+  True
+  >>> type(a)
+  <type 'dict'>
+  ```
+  - `d.items()` 返回所有的键值对
+  ```python
+  >>> a.items()
+  [('three', 3), ('two', 2), ('one', 1)]
+  ```
+  - `d.keys()` 返回键列表
+  ```python
+  >>> a.keys()
+  ['three', 'two', 'one']
+  ```
+  - `d.values()` 返回值列表
+  ```python
+  >>> a.values()
+  [3, 2, 1]
+  ```
+  - `d[key]` 获取`key`对应的`value`
+  ```python
+  >>> b["one"]
+  1
+  ```
+  - `get(key[, default])` 获取`key`的`value`，如果没有`key`，则返回`default`；如果没有`default`，则没有值也不会报错
+  ```python
+  >>> a.get("one")
+  1
+  >>> a.get("one1",222)
+  2
+  ```
+  - `d[key] = value` 设置`key`的`value`或者增加一个`item`
+  ```python
+  >>> a['one']=111
+  >>> a['one']
+  111
+  ```
+  - `del d[key]或者del(d[key])` 删除`key`
+  ```python
+  >>> del a["one"]
+  ```
+  - `key in d` 是否存在`key`
+  ```python
+  >>> "one" in a
+  False
+  ```
+  - d.has_key(key) 是否存在`key`，建议使用`key in d`代替
+  ```python
+  >>> a.has_key("one")
+  False
+  ```
+  - `key not in d`是否不存在`key`
+  ```python
+  >>> "one" not in a
+  True
+  ```
+  - `d.clar()` 移除所有的`items`
+  ```python
+  >>> a.clear()
+  >>> a
+  {}
+  ```
+  - `d.copy()` 复制字典
+  ```python
+  >>> a=b.copy()
+  >>> a
+  {'one': 1, 'three': 3, 'two': 2}
+  ```
+  - `pop(key[, default])` 删除`key`，并返回`value`；如果没有`key`，则返回`default`，如果`default`没有，则会报错
+  ```python
+  >>> a.pop("one",111)
+  1
+  >>> a.pop("one",111)
+  111
   ```
 
 ## Python序列
@@ -381,4 +476,51 @@
   11
   >>> min('abc')
   'a'
+  ```
+
+## Python流程控制
+
+[[Back To Top]](#jump-to-section)
+
+- 逻辑运算符：`and/or/not`
+  - 类似于`Java`中的`and/or/!`
+- `if/elif/else`
+  - [jump to api doc](https://docs.python.org/2/reference/compound_stmts.html#the-if-statement)
+  - 语法格式
+  ```python
+  if expression:
+      suite
+  elsif expression:
+      suite
+  else
+      suite
+  ```
+  - 示例
+  ```python
+  if 1 > 2 and 2 > 3:
+      print "hello"
+      print "world"
+  elif 2 > 3 or 1 > 2:
+      print "2 > 3"
+  elif not 3 > 2:
+      print "3 > 2"
+  else:
+      print "else"
+  ```
+- `for`
+  - [jump to api doc](https://docs.python.org/2/reference/compound_stmts.html#the-for-statement)
+  - 语法格式
+  ```python
+  for target_list in expression_list:
+    suite
+  else:
+    suite
+  ```
+  - 示例
+  ```python
+  for letter in 'Python':
+    print 'Current Letter:', letter
+  fruits=['banana','apple','mango']
+  for fruit in fruits:
+    print 'Current fruit:', fruit
   ```
