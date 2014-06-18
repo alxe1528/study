@@ -93,13 +93,13 @@
 - `Ctrl + Shift + V`
   - Paste from recent buffers...
   - 弹出窗口列举出最近使用的剪贴板内容，选择性插入
-- `Ctrl + D`
+- `Ctrl + D` **替换为：**`Alt + D`
   - Duplicate current line or selected block
   - 复制当前行到下一行（未选择行时）；复制选择的代码块到选择的末尾位置
-- `Alt + D`
-  - Duplicate lines
-  - 复制当前行或者选择的行到下一行
-- `Ctrl + Y`
+- `Ctrl + Alt + Up/Down`
+  - Copy/Duplicate lines Ex
+  - 复制当前行或者选择的行到上一行或者下一行（使用`Eclipse Actions`插件实现`Eclipse`同样的复制效果）
+- `Ctrl + Y` **添加：**`Ctrl + D`
   - Delete line at caret
   - 删除当前行或者选择的行
 - `Ctrl + Shift + J`
