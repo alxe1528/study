@@ -584,7 +584,7 @@ alert('不会被执行！！！');
 
 **Object类型**
 
-- 语法`new Object( [ value ] )`，如果给定值是`null`或`undefined`，它生成并返回一个空对象，否则它将返回一个与给定值对应类型的对象
+- **通过构造函数创建对象**，语法`new Object( [ value ] )`，如果给定值是`null`或`undefined`，它生成并返回一个空对象，否则它将返回一个与给定值对应类型的对象
 
  ```
  // 定义空的Object对象
@@ -594,6 +594,80 @@ alert('不会被执行！！！');
  ```
 
 - `JavaScript`语言的所有对象都是由`Object`衍生的对象；所有对象都继承了`Object.prototype`的方法和属性，尽管它们可能被覆盖。原型对象的更改会传播给所有的对象，除非这些属性和方法受到了原型链中那些进一步的变化的覆盖。
+
+- 一个`JavaScript`对象有很多属性。一个对象的属性可以被解释称一个附加到对象上的一个变量。对象的属性和普通的`JavaScript`变量基本没什么区别，仅仅是属性属于某个对象。可以通过点符号来访问一个对象的属性
+
+ ```
+ objectName.propertyName
+ ```
+
+- 和其他`JavaScript`变量一样，对象的名字(可以是普通的变量)和属性的名字都是大小写敏感的。你可以在定义一个属性的时候就给它赋值。例如，我们创建一个`myCar`的对象然后给他三个属性，`make`，`model`，`year`。具体如下所示：
+
+ ```
+ var myCar = new Object();
+ myCar.make = "Ford";
+ myCar.model = "Mustang";
+ myCar.year = 1969;
+ ```
+
+- `JavaScript`对象的属性也可以通过方括号访问。对象有时也被叫作关联数组，因为每个属性都有一个用于访问它的字符串值。例如，你可以按如下方式访问`myCar`对象的属性：
+
+ ```
+ myCar["make"] = "Ford";
+ myCar["model"] = "Mustang";
+ myCar["year"] = 1969;
+ ```
+
+- 一个对象的属性名可以是任何有效的`JavaScript`字符串，或者可以被转换为字符串的任何东西，包括空字符串。然而，一个属性的名称如果不是一个有效的`JavaScript`标识符（例如，一个有空格或短横线，或者以数字开头的属性名），就只能通过方括号标记访问。这个标记法在属性名称是动态判定（属性名只有到运行时才能判定）时非常有用。例如：
+
+ ```
+ var myObj = new Object(),
+ str = "myString",
+ rand = Math.random(),
+ obj = new Object();
+
+ myObj.type = "Dot syntax"; // type: "Dot syntax"
+ myObj["date created"] = "String with space"; // date created: "String with space"
+ myObj[str] = "String value"; // myString: "String value"
+ myObj[rand] = "Random Number"; // 0.3309114803560078: "Random Number"
+ myObj[obj] = "Object"; // [object Object]: "Object"
+ myObj[""] = "Even an empty string"; // "": "Even an empty string"
+
+ console.log(myObj);
+ ```
+
+- 除了通过构造函数创建对象之外，你也可以**通过对象初始化器创建对象**。使用对象初始化器也被称作通过字面值创建对象
+
+ ```
+var obj = { property_1:   value_1,   // property_# may be an identifier...
+            2:            value_2,   // or a number...
+            // ...,
+            "property n": value_n }; // or a string
+ ```
+
+- 这里`obj`是新对象的名称，每一个`property_i`是一个标识符（可以是一个名称、数字或字符串字面量），并且每个`value_i`是一个其值将被赋予`property_i`的表达式。`obj` 与赋值是可选的；如果你不需要在其他地方引用对象，你就不需要将它赋给一个变量。（注意在接受一条语句的地方，你可能需要将对象字面量括在括号里，从而避免将字面量与块语句相混淆）
+
+- 下例创建了有三个属性的`myHonda`对象。注意它的`engine`性也是一个拥有自己属性的对象。
+
+ ```
+ var myHonda = {color: "red", wheels: 4, engine: {cylinders: 4, size: 2.2}};
+ ```
+
+- **使用构造函数，通过两步来创建对象**
+ - 通过创建一个构造函数来定义对象的类型。首字母大写是非常普遍而且很恰当的惯用法
+ - 通过`new`创建对象实例
+
+ ```
+ // 注意通过使用 this 将传入函数的值赋给对象的属性
+ function Car(make, model, year) {
+   this.make = make;
+   this.model = model;
+   this.year = year;
+ }
+
+ var kenscar = new Car("Nissan", "300ZX", 1992);
+ var vpgscar = new Car("Mazda", "Miata", 1990);
+ ```
 
 ## 流程控制语句
 
