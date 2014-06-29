@@ -888,3 +888,224 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
  ```
 
 ***
+
+## 函数
+
+[[Back To Top]](#jump-to-section)
+
+**定义函数**
+
+- 一个函数的定义（也称为函数的声明）由一系列的函数关键词组成，依次为：
+ - 函数的名称
+ - 函数的参数，包围在括号`()`中，并由逗号区隔的一个列表
+ - 函数的`JavaScript`语句，包围在花括号`{}`中
+
+ ```
+ // 定义了一个名为square的简单函数
+ function square(number) {
+   return number * number;
+ }
+ ```
+
+- 原始参数（比如一个具体的数字）被作为值传递给函数；值被传递给函数，但是如果被调用函数改变了这个参数的值，这样的改变不会影响到全局或调用的函数
+
+- 如果你传递一个对象（即一个非实际值，例如矩阵或用户自定义的其它对象）作为参数，而函数改变了这个对象的属性，这样的改变对函数外部是可见的，如下面的例子所示
+
+ ```
+ function myFunc(theObject, theValue) {
+   theObject.make = "Toyota";
+   theValue = "hello";
+ }
+
+ var mycar = {make: "Honda", model: "Accord", year: 1998}, x, y;
+ var z = "world";
+
+ x = mycar.make;     // x gets the value "Honda"
+
+ myFunc(mycar, z);
+ y = mycar.make;     // y gets the value "Toyota"
+                     // (the make property was changed by the function)
+ console.log(z);     // z still gets the value "world"
+ ```
+
+- 请注意，重新给参数分配一个对象，并不会对函数的外部有任何影响，因为这样只是改变了参数的值，而不是改变了对象的一个属性值：
+
+ ```
+ function myFunc(theObject) {
+   theObject = {make: "Ford", model: "Focus", year: 2006};
+ }
+
+ var mycar = {make: "Honda", model: "Accord", year: 1998}, x, y;
+
+ x = mycar.make;     // x gets the value "Honda"
+
+ myFunc(mycar);
+ y = mycar.make;     // y still gets the value "Honda"
+ ```
+
+- 在第一段例子中，对象`mycar`被传递给了函数`myFunc`，进而函数改变了它。第二段例子里，函数并没有改变传递来的对象；相反，它生成了一个新的恰好和传递的全局对象同名的局部变量，因此对传递来的全局对象没有任何影响。
+
+- 当然上述函数定义都用的是语法语句，函数也同样可以由**函数表达式**产生。这样的函数可以是**匿名**的；它不必有名称。例如，上面提到的函数`square`也可这样来定义：
+
+ ```
+ var square = function(number) {return number * number};
+ ```
+
+- 必要时，函数名称可与函数表达式同时存在，并且可以用于在函数内部代指其本身，或者在调试器堆栈跟踪中鉴别该函数：
+
+ ```
+ var factorial = function fac(n) {return n<2 ? 1 : n*fac(n-1)};
+ console.log(factorial(3)); // output is: 6
+ ```
+
+- 函数表达式在将函数作为一个引数传递给其它函数时十分方便。下面的例子演示了一个叫`map`的函数如何被定义，而后调用一个匿名函数作为其第一个参数：
+
+ ```
+ function map(f,a) {
+   var result = [], // Create a new Array
+       i;
+   for (i = 0; i != a.length; i++)
+     result[i] = f(a[i]);
+   return result;
+ }
+
+ console.log(map(function(x) {return x * x * x}, [0, 1, 2, 5, 10]));
+ // output is: [0, 1, 8, 125, 1000]
+ ```
+
+***
+
+**调用函数**
+
+- 定义一个函数并不会自动的执行它。定义了函数仅仅是赋予函数以名称并明确函数被调用时该做些什么。调用函数才会以给定的参数真正执行这些动作。
+
+- 函数一定要处于调用它们的域中，但是函数的声明可以在它们的调用语句之后，如下例：
+
+ ```
+ console.log(square(5));
+ function square (n) {
+   return n * n;
+ }
+ ```
+
+- 函数的域是指函数被声明时的所在函数，或者函数在顶级被声明时指整个程序。注意只有使用如上的语法形式（即如`function funcName(){}`）才可以。而形如下面的代码是无效的。
+
+ ```
+console.log(square1(5)); // Uncaught ReferenceError: square1 is not defined
+square1 = function (n) {
+  return n * n;
+}
+ ```
+
+- 函数可以被递归；就是说函数可以调用其本身。例如，下面这个函数计算递归的阶乘值：
+
+ ```
+ function factorial(n){
+   if ((n == 0) || (n == 1))
+     return 1;
+   else
+     return (n * factorial(n - 1));
+ }
+
+ var a, b, c, d, e;
+ console.log(a = factorial(1)); // a gets the value 1
+ console.log(b = factorial(2)); // b gets the value 2
+ console.log(c = factorial(3)); // c gets the value 6
+ console.log(d = factorial(4)); // d gets the value 24
+ console.log(e = factorial(5)); // e gets the value 120
+
+ square2 = function (n) {
+    if ((n == 0) || (n == 1))
+      return 1;
+    else
+      return (n * square2(n - 1));
+ }
+ console.log(square2(6)); // gets the value 720
+ ```
+
+***
+
+**函数的域**
+
+- 函数内定义的变量不能从函数之外的任何地方取得，因为变量仅仅在该函数的域的内部有定义。相反的，一个函数可以取得在它的域中定义的任何变量和子函数。换言之，定义在全局域中的函数可以取得所有定义在全局域中的变量。而定义在一个函数内部的子函数可以取得定义在其父函数内的，或已经由其父函数取得的任何变量。
+
+ ```
+ // The following variables are defined in the global scope
+ var num1 = 20,
+     num2 = 3,
+     name = "Chamahk";
+
+ // This function is defined in the global scope
+ function multiply() {
+   return num1 * num2;
+ }
+
+ console.log(multiply()); // Returns 60
+
+ // A nested function example
+ function getScore () {
+   var num1 = 2,
+       num2 = 3;
+
+   function add() {
+     return name + " scored " + (num1 + num2);
+   }
+
+   return add();
+ }
+
+ console.log(getScore()); // Returns "Chamahk scored 5"
+ ```
+
+***
+
+**使用参数对象**
+
+- 函数的参数会被保存在一个类似数组的对象中。在函数内，你可以按如下方式找出传入的引数：
+
+ ```
+ arguments[i]
+ ```
+
+- 其中`i`是参数的序号，以`0`开始。所以第一个传来的引参数会是`arguments[0]`。参数的全部数量由`arguments.length`表示。
+
+- 使用参数对象，你可以用比它正式声明会接受的更多参数来调用函数。这在你事先不知道会需要将多少参数传递给函数时十分有用。你可以用`arguments.length`来决定传递给函数的参数的数量，然后用`arguments`对象来取得每个参数。
+
+- 例如，设想有一个用来连接字符串的函数。唯一事先确定的参数，是在连接后的字符串中用来分隔各个连接部分的字符。
+
+ ```
+ function myConcat(separator) {
+   var result = "", // initialize list
+       i;
+   // iterate through arguments
+   for (i = 1; i < arguments.length; i++) {
+      result += arguments[i] + separator;
+   }
+   return result;
+ }
+
+ // returns "red, orange, blue, "
+ console.log(myConcat(", ", "red", "orange", "blue"));
+
+ // returns "elephant; giraffe; lion; cheetah; "
+ console.log(myConcat("; ", "elephant", "giraffe", "lion", "cheetah"));
+
+ // returns "sage. basil. oregano. pepper. parsley. "
+ console.log(myConcat(". ", "sage", "basil", "oregano", "pepper", "parsley"));
+ ```
+
+***
+
+**预定义的函数**
+
+`JavaScript`语言有好些个顶级的预定义函数：
+
+- `eval()`
+- `isFinite()`
+- `isNaN()`
+- `parseFloat()`
+- `parseInt()`
+- `decodeURI()`
+- `decodeURIComponent()`
+- `encodeURI()`
+- `encodeURIComponent()`
