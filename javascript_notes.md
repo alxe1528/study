@@ -1583,3 +1583,201 @@ square1 = function (n) {
  passed = [].some(isBigEnough);
  console.log(passed); // passed is false
  ```
+
+ ***
+
+ ### RegExp Object
+
+ 创建一个正则表达式对象，用特定的模式匹配文本
+
+ **创建正则表达式**
+
+ - `/pattern/flags` 使用字面量方式创建
+   - `pattern` 正则表达式的文本
+   - `flags` 该参数可以是下面几个值的任意组合
+     - `g` 全局匹配
+     - `i` 忽略大小写
+     - `m` 让开始和结束锚点（`^`和`$`）工作在多行模式（也就是，`^`和`$`可以匹配字符串中每一行的开始和结束（行是由`\n`或`\r`分割的），而不只是整个输入字符串的最开始和最末尾处）
+
+ ```
+ var re = /ab+c/;
+ var re = /ab+c/i;
+ var re = /ab+c/igm;
+ ```
+
+- `RegExp(pattern [, flags])` 调用`RegExp`对象的构造函数
+
+ ```
+ var re = new RegExp("ab+c");
+ var re = new RegExp("ab+c", "i");
+ var re = new RegExp("ab+c", "igm");
+ ```
+- **注意**，字面量声明的参数无需引号，而函数声明的参数则需要放在引号里，以下是等价的：
+
+ ```
+ /ab+c/i;
+ new RegExp("ab+c", "i");
+ ```
+
+**`RegExp`对象的属性**
+
+- `global` 是否开启全局匹配，也就是匹配目标字符串中所有可能的匹配项，而不是只进行第一次匹配
+- `ignoreCase` 在匹配字符串时是否要忽略字符的大小写
+- `lastIndex` 下次匹配开始的字符串索引位置
+- `multiline` 是否开启多行模式匹配（影响`^`和`$`锚点的行为）
+- `source` 正则对象的源模式文本
+
+**`RegExp`对象的方法**
+- `exec` 在目标字符串中执行一次正则匹配操作，返回匹配的数组结果或者`null`
+  - 如果`exec`方法没有找到匹配，将返回`null`。如果找到匹配项，则`exec`方法返回一个数组，并将更新全局`RegExp`对象的属性以反映匹配结果。数组元素`0`包含了完整的匹配项，而元素`1`到`n`包含的是匹配项中出现的任意一个子匹配项。这相当于没有设置全局标志 (`g`) 的`match`方法的行为
+  - 如果为正则表达式设置了全局标志，则`exec`从`lastIndex`值指示的位置开始搜索字符串。如果没有设置全局标志，则`exec`忽略`lastIndex`的值，从字符串的起始位置开始搜索
+  - `exec`方法返回的数组有三个属性：`input`、`index`和 `lastIndex`。`input` 属性包含整个被搜索的字符串。`index`属性包含了在整个被搜索字符串中匹配的子字符串的位置。`lastIndex`属性中包含了匹配中最后一个字符的下一个位置
+
+ ```
+ var text = "Образец text на русском языке";
+ var regex = new RegExp("[\u0400-\u04FF]+", "g");
+
+ var match = regex.exec(text);
+ console.log(match[0]);  // prints "Образец"
+ console.log(regex.lastIndex);  // prints "7"
+
+ var match2 = regex.exec(text);
+ console.log(match2[0]);  // prints "на" [did not print "text"]
+ console.log(regex.lastIndex);  // prints "15"
+ ```
+
+ ```
+ var text = "First line\nSecond line";
+ var regex = /(\S+) line\n?/g;
+
+ var match = regex.exec(text);
+ console.log(match[1]);  // prints "First"
+ console.log(regex.lastIndex); // prints 11
+
+ var match2 = regex.exec(text);
+ console.log(match2[1]); // prints "Second"
+ console.log(regex.lastIndex); // prints "22"
+
+ var match3 = regex.exec(text);
+ console.log(match3 === null); // prints "true"
+ ```
+
+- `test` 测试当前正则是否能匹配目标字符串中的某一部分子字符串，返回`true/false`
+  - `test` 方法检查字符串中是否存在某种模式，如果存在，则返回`true`，否则返回`false`
+  - `test` 方法不修改全局`RegExp`对象的属性
+
+ ```
+ var text = "First line\nSecond line";
+ var regex = /(\S+) line\n?/g;
+
+ console.log(regex.test(text)); // prints "true"
+ console.log(regex.lastIndex); // prints 11
+
+ console.log(regex.test(text)); // prints "true"
+ console.log(regex.lastIndex); // prints "22"
+
+ console.log(regex.test(text)); // prints "false"
+ ```
+
+**`String`对象的正则表达式方法**
+
+- `match(regexp)` 将字符串与正则表达式匹配，并返回一个包含该搜索结果的数组或者`null`
+  - 如果`match`方法没有找到匹配，将返回`null`。如果找到匹配，则`match`方法返回一个数组，并将更新全局`RegExp`对象的属性以反映匹配结果
+  - 如果没有设置全局标志 (`g`)，数组元素`0`包含整个匹配，而元素`1`到`n`包含任何一个子匹配。 此行为与未设置全局标志时`exec`方法（正则表达式）的行为相同。如果设置了全局标志，则元素`0`到元素`n`包含所有出现的匹配
+  - 如果未设置全局标志，则`match`方法返回的数组有两个特性：`input`和`index`。`input`属性包含整个被搜索的字符串。`index`属性包含了在整个被搜索字符串中匹配的子字符串的位置
+  - 如果设置了标志`i`，则搜索不区分大小写
+
+ ```
+ var src = "azcafAJAC";
+ var re = /[a-c]/;
+ var result = src.match(re);
+
+ // The entire match is in array element 0.
+ console.log(result[0] + "<br/>");
+
+ // Now try the same match with the global flag.
+ var reg = /[a-c]/g;
+ result = src.match(reg);
+
+ // The matches are in elements 0 through n.
+ for (var index = 0; index < result.length; index++)
+ {
+     console.log ("submatch " + index + ": " +  result[index]);
+ }
+ // Output:
+ // submatch 0: a demo.js:159
+ // submatch 1: c demo.js:159
+ // submatch 2: a
+ ```
+
+- `search(regexp)` 查找正则表达式搜索中第一个子字符串匹配项，返回匹配的索引或者`-1`
+
+ ```
+ var src = "is but a Dream within a dream";
+ var re = /dream/;
+ var pos = src.search(re);
+ console.log(pos);
+ // Output: 24
+
+ re = /dream/i;
+ pos = src.search(re);
+ console.log(pos);
+ // Output: 9
+ ```
+
+- `replace(regexp|substr, newSubStr|function)` 使用正则表达式，替换字符串
+  - `regexp` 一个`RegExp`对象，该正则所匹配的内容会被第二个参数的返回值替换掉
+  - `substr` 被替换掉的一个`String`
+  - `newSubStr` 替换掉第一个参数在原字符串中的匹配部分，该字符串中可以内插一些特殊的变量名
+  - `function` 回调函数。这个函数的返回值将作为最终`replace`匹配返回的新字符串。`replace`中的第一个参数（正则表达）`exec`匹配来的字符串将作为实参传递到这个函数
+
+ ```
+ // 使用字符串作为第二个参数
+ // 替换字符串可以插入下面的特殊变量名
+ $$  表示字符串 "$"
+ $&  表示第一个参数所匹配的子串
+ $`  位于匹配子串$&左边的内容
+ $'  位于匹配子串$&右边的内容
+ $n or $nn  如果n或nn是个十进制的数字，并且replace方法的第一个参数是个正则表达式，那么$n表示正则表达式中的第n个子匹配字符串
+ ```
+
+ ```
+ // 替换 方法的所有实例替换“为“a.”
+ var s = "the batter hit the ball with the bat";
+
+ // Replace "the" with "a".
+ var re = /the/g;
+ var result = s.replace(re, "a");
+ console.log(result);
+ // Output: a batter hit a ball with a bat
+ ```
+
+ ```
+ // replace 方法也可以替换模式中的子表达式。 下面的示例将字符串中的每对单词进行了交换：
+ var s = "The quick brown fox jumped over the lazy dog.";
+ var re = /(\S+)(\s+)(\S+)/g;
+ // Exchange each pair of words.
+ var result = s.replace(re, "$3$2$1");
+ console.log(result);
+
+ // Output: quick The fox brown over jumps lazy the dog.
+
+ ```
+
+ ```
+ // 如何使用返回的函数替换文本，它转换为摄氏替换“F”后面的数字的任何实例
+ // Initialize pattern.
+ var test = /(\d+(\.\d*)?)F\b/g;
+ var s1 = "Water freezes at 32F and boils at 212F.";
+
+ // Use a function for the replacement.
+ var s2 = s1.replace(test,
+   function($0,$1,$2) {
+     return((($1-32) * 5/9) + "C");
+ });
+ console.log(s2);
+ // Output: Water freezes at 0C and boils at 100C.
+ ```
+
+ ***
+
