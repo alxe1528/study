@@ -20,14 +20,20 @@
 3. 如果既要向`Git`远程服务器推送内容，又要推送到`Subversion`远程服务器，则必须先向`Subversion`推送（`dcommit`），因为该操作会改变所提交的数据内容。
    ```
    git svn dcommit
+   git svn dcommit --rmdir #
    ```
 
-4. 要在`Subversion`中建立一个新分支
+4. 对于移动文件包含文件夹时，`git`默认可能会保留空文件，但提交时并不会包含删除空文件夹的操作，需要显式的告诉svn一并进行删除掉
+   ```
+   git svn dcommit --rmdir
+   ```
+
+5. 要在`Subversion`中建立一个新分支
    ```
    git svn branch [分支名]
    ```
 
-5. `git svn`其它操作
+6. `git svn`其它操作
    ```
    git svn show-ignore
    git svn log
