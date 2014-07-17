@@ -1247,6 +1247,73 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
  console.log(myConcat(". ", "sage", "basil", "oregano", "pepper", "parsley"));
  ```
 
+- `arguments.callee` 返回正被执行的`Function`对象，即指定的`Function`对象的正文
+  - `callee` 属性是`arguments`对象的一个成员，该属性仅当相关函数正在执行时才可用
+  - `callee` 属性的初始值是正被执行的`Function`对象，这将允许匿名函数成为递归的
+
+ ```
+ function factorial(n) {
+    if (n <= 0)
+       return 1;
+    else
+       return n * arguments.callee(n - 1)
+ }
+ console.log(factorial(4));
+ // Output: 24
+ ```
+
+***
+
+**`apply`和`call`在使用一个指定的`this`值和若干个指定的参数值的前提下调用某个函数或方法**
+
+- `fun.apply(thisArg[, argsArray])` 方法接受的是一个包含多个参数的数组(或类数组对象)
+- `fun.call(thisArg[, arg1[, arg2[, ...]]])` 方法接受的是若干个参数的列表
+  - `thisArg` 在`fun`函数运行时指定的`this`值，需要注意的是，指定的`this`值并不一定是该函数执行时真正的`this`值，如果这个函数处于非严格模式下，则指定为null和`undefined`的`this`值会自动指向全局对象(浏览器中就是`window`对象)，(数字,字符串,布尔值)的`this`会指向该原始值的自动包装对象
+  - `argsArray` 一个数组对象或者类数组对象，其中的数组元素将作为单独的参数传给`fun`函数.如果该参数的值为`null`或`undefined`，则表示不需要传入任何参数
+  - `arg1`, `arg2`, ... 指定的参数列表
+
+- **举例**：在一个子构造函数中，你可以通过调用父构造函数的`call`方法来实现继承，类似于`Java`中的写法。使用`Food`和`Toy`构造函数创建的对象实例都会拥有在`Product`构造函数中添加的`name`属性和`price`属性，但`category`属性是在各自的构造函数中定义的
+
+ ```
+ function Output(name, price) {
+   console.log('name is: ' + name);
+   console.log('price is: ' + price);
+ }
+
+ function Product(name, price) {
+   this.name = name;
+   this.price = price;
+   return this;
+ }
+
+ function Food(name, price) {
+   Product.call(this, name, price);
+   Output.apply(this, arguments);
+   this.category = 'food';
+ }
+ //Food.prototype = new Product();
+
+ function Toy(name, price) {
+   Product.call(this, name, price);
+   Output.apply(this, arguments);
+   this.category = 'toy';
+ }
+ //Toy.prototype = new Product();
+
+ var cheese = new Food('feta', 5);
+ var fun = new Toy('robot', 40);
+
+ console.log(cheese);
+ console.log(fun);
+ // Output:
+ // name is: feta
+ // price is: 5
+ // name is: robot
+ // price is: 40
+ // Food {name: "feta", price: 5, category: "food"}
+ // Toy {name: "robot", price: 40, category: "toy"}
+ ```
+
 ***
 
 **预定义的函数**
@@ -1263,18 +1330,7 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
 - `encodeURI()`
 - `encodeURIComponent()`
 
-## 内置核心对象
-
-`JavaScript`语言中预定义的一些对象
-
-- Array
-- Boolean
-- Date
-- Function
-- Math
-- Number
-- RegExp
-- String
+***
 
 ### Array Object
 
@@ -1288,6 +1344,8 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
  var arr = new Array(element0, element1, ..., elementN);
  var arr = Array(element0, element1, ..., elementN);
  var arr = [element0, element1, ..., elementN];
+ console.log(typeof arr); // object
+ console.log(arr instanceof Array); // true
  ```
 
 - 若要创建一长度不为零但却不包含任何元素的数组，可以使用下列方式之一：
@@ -1756,6 +1814,8 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
  var re = /ab+c/;
  var re = /ab+c/i;
  var re = /ab+c/igm;
+ console.log(typeof re); // object
+ console.log(re instanceof RegExp); // true
  ```
 
 - `RegExp(pattern [, flags])` 调用`RegExp`对象的构造函数
