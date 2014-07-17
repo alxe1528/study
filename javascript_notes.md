@@ -887,24 +887,177 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
  // 注意它如何跳过了 "i = 1, j = 1" 和 "i = 1, j = 2"
  ```
 
+## 变量作用域
+
+`JavaScript`有两个范围：全局和局部。在函数定义之外声明的变量是全局变量，它的值可在整个程序中访问和修改。在函数定义内声明的变量是局部变量。每当执行函数时，都会创建和销毁该变量，且无法通过函数之外的任何代码访问该变量。`JavaScript`不支持块范围（通过一组大括号`{. . .}`定义新范围），但块范围变量的特殊情况除外
+
+- 虽然局部变量可具有与全局变量相同的名称，但它是完全独立的；更改一个变量的值不会影响另一个变量。 在声明局部变量的函数中，仅局部版本具有意义
+
+ ```
+ // Global definition of aCentaur.
+ var aCentaur = "a horse with rider,";
+
+ // A local aCentaur variable is declared in this function.
+ function antiquities(){
+    var aCentaur = "A centaur is probably a mounted Scythian warrior";
+ }
+
+ antiquities();
+ aCentaur += " as seen from a distance by a naive innocent.";
+
+ console.log(aCentaur);
+ // Output: "a horse with rider, as seen from a distance by a naive innocent."
+ ```
+
+- 没有块级作用域，比如`if/for`语句代码块
+
+ ```
+ if (true) {
+   var aGlobal = "this is true";
+ }
+ console.log(aGlobal); // Output: this is true
+
+ if (false) {
+   var aGlobal2 = "this is undefined";
+ }
+ console.log(aGlobal2); // Output: undefined
+
+ for (var i = 0; i < 5; i++) {
+   var num = i;
+ }
+ console.log(num); // Output: 4
+ ```
+
+- 在`JavaScript`中，变量就像它们在所在范围的开始被声明一样来计算。有时，这会导致意外行为，如此处所示
+
+ ```
+ var aNumber = 100;
+ tweak();
+
+ function tweak() {
+   if (false){
+       var aNumber = 123;
+   }
+
+   // This prints "undefined", because aNumber is also defined locally below.
+   console.log(aNumber);
+ }
+
+ ```
+
+- **当`JavaScript`执行一个函数时，它首先会查找所有变量声明，例如`var someVariable;`。它使用初始值`undefined`创建变量。如果使用一个值声明变量（例如`var someVariable = "something";`），则该变量的初始值仍为`undefined`，并且仅当执行包含声明的行时才采用已声明的值。**
+
+- **`JavaScript`会在执行任何代码之前处理所有变量声明，无论是在条件块中声明还是在其他构造中声明。`JavaScript`一旦找到所有变量，就会执行函数中的代码。如果在函数内部隐式声明变量（即，该变量出现在赋值表达式的左侧但尚未使用`var`进行声明），则它将创建为全局变量。**
+
+- 在`JavaScript`中，内部（嵌套）函数将存储对局部变量的引用（即使在函数返回之后），这些局部变量存在于与函数本身相同的范围中。这一组引用称为闭包。在以下示例中，对内部函数的第二次调用所输出的消息与第一次调用相同（`“Hello Bill”`），因为外部函数的输入参数`name`是存储在内部函数闭包中的局部变量。
+
+ ```
+ function send(name) {
+   // Local variable 'name' is stored in the closure
+   // for the inner function.
+   return function () {
+       sendHi(name);
+   }
+ }
+
+ function sendHi(msg) {
+   console.log('Hello ' + msg);
+ }
+
+ var func = send('Bill');
+ func(); // Output: Hello Bill
+ sendHi('Pete'); // Output: Hello Pete
+ func(); // Output: Hello Bill
+ ```
+
+## 复制、传递和比较数据
+
+**按值和按引用**
+
+- 数字和布尔值（`true`和`false`）按值进行复制、传递和比较。按值进行复制或传递时，将在计算机内存中分配一个空间，然后将原始项的值复制到该空间中。如果随后更改原始项，也不影响副本（反之亦然），因为两者是各自不同的实体。
+
+- 对象、数组和函数按引用进行复制、传递和比较。按引用进行复制或传递时，实质上创建原始项的指针，并像副本一样使用该指针。如果随后更改原始项，则同时更改原始项和副本（反之亦然）。 实际上只有一个实体；“副本”实际上不是副本，而只是对数据的另一个引用。
+
+- 按引用进行比较时，两个变量必须恰好引用同一个实体，才能成功进行比较。例如，两个不同`Array`对象比较之后的结果始终为不等，即使二者所含的元素相同也是如此。若要使比较成功，其中一个变量必须是对另一个变量的引用。若要检查两个数组是否包含相同的元素，请比较 `toString()`方法的结果。
+
+- 字符串按引用进行复制和传递，但按值进行比较。注意，如果有两个`String`对象（用`new String("something")`创建），则按引用进行比较，但是，如果其中一个值为或两个值均为字符串值，则按值进行比较。
+
+**将参数传递给函数**
+
+- 按值将参数传递给某个函数时，将会创建该参数的单独副本（一个仅存在于该函数内部的副本）。 即使按引用传递（非`C`语言中的参数引用传递，只是类似）对象和数组，如果在该函数中用一个新值直接覆盖它们，则在该函数之外也不会反映新值。只有对对象属性或数组元素的更改才会在函数外可见。
+
+- **实际上同`Java`一样，`JavaScript`中传递参数也只有值传递，对象作为参数传递时，是把对象在内存中的地址拷贝了一份传给了参数**
+
+ ```
+ // This clobbers (over-writes) its parameter, so the change
+ // is not reflected in the calling code.
+ function Clobber(param) {
+   // clobber the parameter; this will not be seen in
+   // the calling code
+   param = new Object();
+   param.message = "This will not work";
+ }
+
+ // This modifies a property of the parameter, which
+ // can be seen in the calling code.
+ function Update(param){
+   // Modify the property of the object; this will be seen
+   // in the calling code.
+   param.message = "I was changed";
+ }
+
+ // Create an object, and give it a property.
+ var obj = new Object();
+ obj.message = "This is the original";
+
+ // Call Clobber, and print obj.message. Note that it hasn't changed.
+ Clobber(obj);
+ console.log(obj.message); // Still displays "This is the original".
+
+ // Call Update, and print obj.message. Note that is has changed.
+ Update(obj);
+ console.log(obj.message); // Displays "I was changed".
+ ```
+
+**测试数据**
+
+- 执行按值测试时，将比较两个不同的项，以查看其是否彼此相等。通常，这种比较是逐字节进行的。按引用测试时，将检查两项是否为指向同一个原始项的指针。如果是，则其比较结果为相等；否则，即使其值完全相同（逐字节），其比较结果仍为不相等。
+
+- 按引用复制和传递字符串可节省内存；但是，由于字符串一经创建即无法更改，因此可按值比较字符串。这样可测试两个字符串的内容是否相同，即使其中一个是完全独立于另一个生成的也是如此。
+
+## 内置核心对象
+
+`JavaScript`语言中预定义的一些对象
+
+- Array
+- Boolean
+- Date
+- Function
+- Math
+- Number
+- RegExp
+- String
+
 ***
 
-## 函数
+## Function函数
 
 [[Back To Top]](#jump-to-section)
 
 **定义函数**
 
 - 一个函数的定义（也称为函数的声明）由一系列的函数关键词组成，依次为：
- - 函数的名称
- - 函数的参数，包围在括号`()`中，并由逗号区隔的一个列表
- - 函数的`JavaScript`语句，包围在花括号`{}`中
+  - 函数的名称
+  - 函数的参数，包围在括号`()`中，并由逗号区隔的一个列表
+  - 函数的`JavaScript`语句，包围在花括号`{}`中
 
  ```
  // 定义了一个名为square的简单函数
  function square(number) {
    return number * number;
  }
+ console.log(typeof square); // function
+ console.log(square instanceof Function); // true
  ```
 
 - 原始参数（比如一个具体的数字）被作为值传递给函数；值被传递给函数，但是如果被调用函数改变了这个参数的值，这样的改变不会影响到全局或调用的函数
@@ -991,10 +1144,10 @@ var obj = { property_1:   value_1,   // property_# may be an identifier...
 - 函数的域是指函数被声明时的所在函数，或者函数在顶级被声明时指整个程序。注意只有使用如上的语法形式（即如`function funcName(){}`）才可以。而形如下面的代码是无效的。
 
  ```
-console.log(square1(5)); // Uncaught ReferenceError: square1 is not defined
-square1 = function (n) {
-  return n * n;
-}
+ console.log(square1(5)); // Uncaught ReferenceError: square1 is not defined
+ square1 = function (n) {
+   return n * n;
+ }
  ```
 
 - 函数可以被递归；就是说函数可以调用其本身。例如，下面这个函数计算递归的阶乘值：
