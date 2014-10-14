@@ -118,7 +118,13 @@ Eclipse IDE
 
 jetty
   mvn jetty:run
+  mvn jetty:run -Djetty.port=8083
   mvnDebug jetty:run
+
+tomcat7
+  mvn tomcat7:run
+  mvn tomcat7:run -Dmaven.tomcat.port=8088
+  mvnDebug tomcat7:run
 
 
 将项目生成的构建部署至远程仓库中
