@@ -1,0 +1,61 @@
+以下测试是在linux readhat 64位系统，root用户下安装成功，并没有将nexus安装成服务
+如果linux系统默认的jdk至少是1.7的就不需要在设置jdk1.7的path了
+
+
+1.创建nexus文件夹
+# mkdir /usr/local/nexus
+
+2.解压缩nexus压缩包，并复制到nexus文件夹中
+# tar -zxvf nexus-2.10.0-02-bundle.tar.gz
+# cp /mnt/hgfs/download/nexus-2.10.0-02 /usr/local/nexus/ -r
+# cp /mnt/hgfs/download/sonatype-work/ /usr/local/nexus/ -r
+
+3.创建nexus启动bash，设置jdk1.7 path，最后调用nexus start命令
+# vi /usr/local/nexus/nexus-start.sh
+4.确认是否一致
+# cat /usr/local/nexus/nexus-start.sh
+
+#!/bin/bash
+
+JAVA_HOME=~/jdk1.7.0_67
+CLASSPATH=$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+PATH=$JAVA_HOME/bin:$PATH
+export PATH
+
+echo $JAVA_HOME
+echo $PATH
+java -version
+
+/usr/local/nexus/nexus-2.10.0-02/bin/nexus start
+
+
+5.创建nexus关闭bash
+# vi /usr/local/nexus/nexus-stop.sh
+6.确认是否一致
+# cat /usr/local/nexus/nexus-stop.sh
+
+#!/bin/bash
+
+/usr/local/nexus/nexus-2.10.0-02/bin/nexus stop
+
+
+7.为刚才创建好的2个bash文件添加执行权限
+# chmod +x /usr/local/nexus/nexus-start.sh
+# chmod +x /usr/local/nexus/nexus-stop.sh
+# ls -l /usr/local/nexus/
+
+
+8.修改nexus的端口号，代码段为：application-port=8081
+# vi /usr/local/nexus/nexus-2.10.0-02/conf/nexus.properties
+
+
+9.修改nexus启动时可能会出现的错误：If you insist running as root, then set the environment variable RUN_AS_USER=root before running this script
+具体修改“#RUN_AS_USER=”为“RUN_AS_USER=root”（指定需要用到的用户）
+# vi /usr/local/nexus/nexus-2.10.0-02/bin/nexus
+
+
+10.最后执行命令“/usr/local/nexus/nexus-start.sh”，或者在nexus当前目录中执行命令“./nexus-start.sh”
+
+11.查看log日志看是否有错误，启动服务的时间会跟服务器的配置成正比。。。
+# tail /usr/local/nexus/nexus-2.10.0-02/logs/wrapper.log
+# tail /usr/local/nexus/nexus-2.10.0-02/logs/wrapper.log
