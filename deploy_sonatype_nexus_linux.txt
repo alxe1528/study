@@ -48,14 +48,18 @@ java -version
 8.修改nexus的端口号，代码段为：application-port=8081
 # vi /usr/local/nexus/nexus-2.10.0-02/conf/nexus.properties
 
+9.开放linux系统防火墙端口号，比如开放3306端口号
+# vi /etc/sysconfig/iptables
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT
 
-9.修改nexus启动时可能会出现的错误：If you insist running as root, then set the environment variable RUN_AS_USER=root before running this script
+10.重启iptalbes服务
+# /etc/init.d/iptables restart
+
+11.修改nexus启动时可能会出现的错误：If you insist running as root, then set the environment variable RUN_AS_USER=root before running this script
 具体修改“#RUN_AS_USER=”为“RUN_AS_USER=root”（指定需要用到的用户）
 # vi /usr/local/nexus/nexus-2.10.0-02/bin/nexus
 
+12.最后执行命令“/usr/local/nexus/nexus-start.sh”，或者在nexus当前目录中执行命令“./nexus-start.sh”
 
-10.最后执行命令“/usr/local/nexus/nexus-start.sh”，或者在nexus当前目录中执行命令“./nexus-start.sh”
-
-11.查看log日志看是否有错误，启动服务的时间会跟服务器的配置成正比。。。
-# tail /usr/local/nexus/nexus-2.10.0-02/logs/wrapper.log
-# tail /usr/local/nexus/nexus-2.10.0-02/logs/wrapper.log
+13.查看log日志看是否有错误，启动服务的时间会跟服务器的配置成正比。。。
+# tail -f /usr/local/nexus/nexus-2.10.0-02/logs/wrapper.log
